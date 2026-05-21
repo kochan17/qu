@@ -1,0 +1,21 @@
+# ローカル開発用 PostgreSQL 16 + pgvector（OrbStack 上で稼働）
+# 起動: docker compose up -d   /  停止: docker compose down
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: qu
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: qu_rails_development
+    ports:
+      - "5433:5432"
+    volumes:
+      - qu_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qu -d qu_rails_development"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  qu_pgdata:
