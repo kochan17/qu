@@ -1,64 +1,51 @@
 # DB Schema Overview
 
-**DB**: Supabase ローカル（Docker 版 Postgres + pgvector）
-**マイグレーション置き場**: `supabase/migrations/`
-**認可**: 全テーブルで **RLS 有効**。`auth.uid()` で自分のデータのみアクセス可。admin ロールは bypass。
+**DB**: PostgreSQL 16 + pgvector（**単一データベース**。Solid Cache/Queue/Cable も同居）。
+**ORM**: Active Record（Rails 8）。マイグレーション置き場: `qu-rails/db/migrate/`。
+**認可**: RLS は使わない。**Pundit ポリシー**（`qu-rails/app/policies/`）で代替。
+**詳細設計**: `.dev/設計書_DBスキーマ_Que.md`（v3 — 全テーブルのカラム・型・制約・インデックス）。
 
-## Auth スキーマ（Supabase が生成・管理）
+## 設計原則
 
-`auth.users` / `auth.identities` / `auth.sessions` を Supabase が自動生成。アプリのテーブルは `public` スキーマに置き、`auth.users.id` を外部キーで参照する。
+- 主キーは **bigint `id`**（Rails デフォルト）。UUID は使わない。
+- enum は **string + DB CHECK 制約** + Rails `enum`。PostgreSQL native enum は使わない。
+- **全外部キーにインデックス**。
+- 固定深さの階層は**別テーブル + 外部キー**（自己参照ツリーにしない）。
+- **YAGNI** — 使わないテーブル・カラムを先回りで作らない。機能の実装時に一緒に追加する。
+- DB 制約（NOT NULL / unique / CHECK / FK）とモデルバリデーションを両方持つ。
+  ただし DB デフォルト列（`created_at` 等）に presence バリデーションは付けない。
 
-## アプリドメイン（`public` スキーマ）
+## コア 13 テーブル（実装済み）
 
-- **profiles** — `auth.users.id` を主キーで参照、追加情報 (display_name, avatar_url, role: 'user' | 'admin')
-  - サインアップ時に Trigger で自動作成
-- **subscriptions** — Stripe サブスク状態
-  - status: 'active' / 'past_due' / 'canceled' / 'trialing' / 'incomplete'
-  - current_period_end, stripe_customer_id, stripe_subscription_id
-  - source: 'stripe' / 'apple_iap' / 'google_iap'
-- **certifications** → **courses** → **sections** → **lessons** — コンテンツ階層
-  - 4 資格（ip / fe / spi / boki）
-  - lessons.content_type: 'video' / 'text' / 'audio' / 'quiz'
-- **questions** — クイズ問題
-  - choices: jsonb（`[{"id":"a","text":"..."}]`）
-  - format: 'multiple_choice' / 'written' / 'cbt'
-  - status: 'draft' / 'published'（AI 生成 → 校閲 → 公開）
-- **quiz_results** — 解答履歴 (user_id, question_id, selected_choice_id, is_correct, answered_at)
-- **progress** — レッスン完了トラッキング (user_id, lesson_id, completed_at)
-- **bookmarks** — ブックマーク (user_id, target_type: 'question' / 'lesson', target_id, created_at)
-- **ai_qa_history** — AI Q&A 履歴 (user_id, question, answer, source_lesson_id, created_at)
-- **embeddings** — pgvector 用
-  - source_id, source_type: 'lesson' / 'note', content, embedding vector(1536)
-  - HNSW インデックス（1,000 件以上投入後に作成）
+- **users** — Rails 8 標準認証（`email_address` / `password_digest`）+ プロフィール + ストリークを 1 テーブルに統合。`role` enum（user / admin）
+- **sessions** — Rails 8 標準認証のセッション
+- **subscriptions** — Stripe サブスク状態（status / source / stripe_* / current_period_end）
+- **certifications → courses → sections → lessons → questions** — コンテンツ階層（4 段の別テーブル + 問題）。`lessons.content_type`、`questions.format` / `status`、`questions.choices` は jsonb
+- **quiz_results** — 解答履歴
+- **lesson_completions** — レッスン完了（旧 progress）
+- **question_review_states** — FSRS-5 の per-user/per-question 状態
+- **daily_activities** — Daily Ring。`completed` は生成列（STORED）
+- **section_masteries** — 80% 習熟ゲート用スコア
+- **notifications** — 通知
 
-## RLS パターン（標準）
+加えて Active Storage 3 テーブル、Solid Cache/Queue/Cable のテーブル（`create_solid_tables` マイグレーション）。
 
-```sql
--- 自分のデータのみ select / insert / update / delete
-create policy "own data"
-  on public.<table>
-  for all
-  using (auth.uid() = user_id);
+## 後で追加する 10 テーブル（機能と同時・YAGNI）
 
--- 公開コンテンツ (certifications/courses/sections/lessons/questions) は全員 select 可
-create policy "public read published"
-  on public.lessons
-  for select
-  using (is_published = true);
+bookmarks / annotations（highlight・pin・ink を kind enum で統合）/ annotation_events / content_versions / embeddings（pgvector・RAG）/ ai_qa_histories / lesson_projects / lesson_scenes / lesson_render_jobs / invitations
 
--- admin は全操作可
-create policy "admin all"
-  on public.<table>
-  for all
-  using (
-    exists (
-      select 1 from public.profiles
-      where id = auth.uid() and role = 'admin'
-    )
-  );
-```
+## Pundit 認可パターン
 
-## 参照
+| パターン | 対象 | ポリシー |
+|---|---|---|
+| 自分のデータのみ | quiz_results, lesson_completions, question_review_states, daily_activities, section_masteries, notifications, subscriptions(read) | `record.user_id == user.id` |
+| 公開コンテンツは全員 read | certifications, courses, sections, lessons, questions | `published` スコープ |
+| admin 限定の write | 上記コンテンツ系の作成・更新・削除 | `user.admin?` |
 
-詳細は `supabase/migrations/<timestamp>_initial.sql` を参照。
-スキーマ変更時は新しいマイグレーション (`supabase migration new <name>`) を追加すること。
+基底ポリシー: `OwnedRecordPolicy` / `PublicContentPolicy`。
+
+## 規約
+
+- スキーマ変更は `bin/rails g migration <name>` → `bin/rails db:migrate`。`schema.rb` を手書きしない。
+- トリガー / RPC は使わず、モデルのコールバック・メソッドで表現する。
+  ただし別モデルを生成する cross-model 副作用 callback は避ける（コントローラ / サービスへ）。
