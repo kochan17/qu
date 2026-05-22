@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        label: "#000000",
+                        secondaryLabel: "#8E8E93",
+                        tertiaryLabel: "#AEAEB2",
+                        quaternaryLabel: "#C7C7CC",
+                        systemBackground: "#FFFFFF",
+                        secondarySystemBackground: "#F2F2F7",
+                        systemBlue: "#007AFF",
+                        systemGreen: "#34C759",
+                        systemOrange: "#FF9500",
+                        separator: "#C6C6C8",
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter", "SF Pro Display", "Hiragino Sans", "sans-serif"],
+                        "display": ["Inter", "SF Pro Display", "Hiragino Sans", "sans-serif"],
+                        "body": ["Inter", "SF Pro Text", "Hiragino Sans", "sans-serif"],
+                        "label": ["Inter", "SF Pro Text", "Hiragino Sans", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', 'SF Pro Text', 'Hiragino Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-nav { backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+        .hairline-border { border: 0.5px solid #C6C6C8; }
+    </style>
+</head>
+<body class="bg-secondarySystemBackground text-label min-h-screen">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center w-full px-6 h-[52px] sticky top-0 z-50 bg-white/80 backdrop-blur-xl dark:bg-black/80 border-b border-[#C6C6C8] dark:border-[#38383A]">
+<div class="flex items-center gap-4">
+<span class="text-[22px] font-semibold text-label dark:text-white">Que</span>
+<nav class="flex items-center gap-2 text-[13px] text-secondaryLabel">
+<span class="hover:opacity-70 cursor-pointer">Admin</span>
+<span class="text-[10px] opacity-40">/</span>
+<span class="hover:opacity-70 cursor-pointer">Course Name</span>
+<span class="text-[10px] opacity-40">/</span>
+<span class="text-label dark:text-white font-medium">Lesson Name</span>
+</nav>
+</div>
+<div class="flex items-center gap-3">
+<button class="material-symbols-outlined text-secondaryLabel hover:opacity-70 transition-transform active:scale-[0.98]">visibility</button>
+<button class="px-3 py-1.5 text-[14px] font-medium text-systemBlue hover:opacity-70 active:scale-[0.98] transition-transform">Render</button>
+<button class="px-4 py-1.5 bg-systemBlue text-white rounded-full text-[14px] font-semibold hover:opacity-90 active:scale-[0.98] transition-transform">Publish</button>
+</div>
+</header>
+<div class="flex h-[calc(100vh-52px)] overflow-hidden">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col gap-2 p-4 h-full w-64 bg-[#F2F2F7] dark:bg-black border-r border-[#C6C6C8] dark:border-[#38383A]">
+<div class="px-4 py-2 mb-4">
+<h2 class="font-label text-[13px] uppercase tracking-wider text-secondaryLabel">Lesson Editor</h2>
+<p class="text-[11px] text-tertiaryLabel">Managing Content</p>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-2 text-secondaryLabel dark:text-secondaryLabel hover:bg-[#E5E5EA] dark:hover:bg-[#2C2C2E] transition-colors duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">play_circle</span>
+<span class="text-[15px]">Video</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-secondaryLabel dark:text-secondaryLabel hover:bg-[#E5E5EA] dark:hover:bg-[#2C2C2E] transition-colors duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">description</span>
+<span class="text-[15px]">Course Text</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-secondaryLabel dark:text-secondaryLabel hover:bg-[#E5E5EA] dark:hover:bg-[#2C2C2E] transition-colors duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]">quiz</span>
+<span class="text-[15px]">Quiz</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 bg-white dark:bg-[#1C1C1E] text-[#007AFF] rounded-lg shadow-sm transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">send</span>
+<span class="text-[15px] font-medium">Publish</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto pt-8 pb-20 px-6">
+<div class="max-w-[880px] mx-auto space-y-8">
+<!-- Content Header -->
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-2 text-[13px] text-secondaryLabel">
+<span>Admin</span>
+<span class="text-[10px] opacity-40">·</span>
+<span>基本情報技術者</span>
+<span class="text-[10px] opacity-40">·</span>
+<span>数の表現</span>
+</div>
+<div class="flex justify-between items-end">
+<div class="flex items-center gap-4">
+<h1 class="text-[32px] font-bold tracking-tight text-label">2進数 / 基数変換</h1>
+<span class="px-2.5 py-0.5 bg-systemGreen/10 text-systemGreen text-[13px] font-semibold rounded-full border border-systemGreen/20">Ready</span>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 text-[15px] font-medium text-systemBlue hover:bg-systemBlue/5 rounded-lg transition-colors">プレビュー</button>
+<button class="px-4 py-2 text-[15px] font-medium text-systemBlue hover:bg-systemBlue/5 rounded-lg transition-colors">動画レンダー</button>
+<button class="px-6 py-2 bg-systemBlue text-white text-[15px] font-semibold rounded-full hover:bg-opacity-90 active:scale-95 transition-all">公開する</button>
+</div>
+</div>
+</div>
+<!-- Card 1: Publishing Checklist -->
+<section class="bg-white hairline-border rounded-xl p-6 space-y-4">
+<h3 class="text-[17px] font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-secondaryLabel">fact_check</span>
+                        Publishing Checklist
+                    </h3>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-systemGreen text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<div class="flex-1 flex justify-between items-center">
+<span class="text-[15px]">動画レンダー完了 <span class="text-secondaryLabel ml-2">(00:51 → 02:51, 6.6 MB)</span></span>
+<a class="text-[13px] text-systemBlue font-medium hover:underline" href="#">最新版を確認</a>
+</div>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-systemGreen text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-[15px]">教材本文 <span class="text-secondaryLabel ml-2">(1,240 字 / 推定読了 3 分)</span></span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-systemGreen text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-[15px]">確認問題 5 問 <span class="text-secondaryLabel ml-2">(うち 4 問 published)</span></span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-systemOrange text-[20px]">warning</span>
+<span class="text-[15px]">1 問が draft → 公開すると非表示になります</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-systemGreen text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-[15px]">ナレーション 12 シーン全て生成済 <span class="text-secondaryLabel ml-2">(Kana voice)</span></span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-systemGreen text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-[15px]">サムネイル設定済み</span>
+</li>
+</ul>
+</section>
+<!-- Card 2: Destination -->
+<section class="bg-white hairline-border rounded-xl p-6 space-y-5">
+<h3 class="text-[17px] font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-secondaryLabel">map</span>
+                        Destination
+                    </h3>
+<div class="grid grid-cols-2 gap-y-4">
+<div class="space-y-1">
+<p class="text-[12px] text-secondaryLabel uppercase font-semibold">資格</p>
+<div class="flex items-center">
+<span class="px-2 py-0.5 bg-indigo-50 text-[#5E5CE6] text-[12px] font-semibold rounded hairline-border">基本情報技術者</span>
+</div>
+</div>
+<div class="space-y-1">
+<p class="text-[12px] text-secondaryLabel uppercase font-semibold">コース</p>
+<p class="text-[15px] font-medium">数の表現</p>
+</div>
+<div class="space-y-1">
+<p class="text-[12px] text-secondaryLabel uppercase font-semibold">セクション</p>
+<p class="text-[15px] font-medium">1. 2進数 / 基数変換</p>
+</div>
+<div class="space-y-1">
+<p class="text-[12px] text-secondaryLabel uppercase font-semibold">表示順</p>
+<p class="text-[15px] font-medium">第 3 講</p>
+</div>
+</div>
+<div class="pt-4 border-t border-[#C6C6C8]/30">
+<p class="text-[12px] text-secondaryLabel uppercase font-semibold mb-2">URL Preview</p>
+<div class="flex items-center justify-between bg-secondarySystemBackground px-4 py-3 rounded-lg border border-[#C6C6C8]/50">
+<code class="text-[14px] text-label">que.app/learn/fe/ns/2shin</code>
+<button class="material-symbols-outlined text-systemBlue text-[20px]">content_copy</button>
+</div>
+</div>
+</section>
+<!-- Card 3: Version History -->
+<section class="bg-white hairline-border rounded-xl overflow-hidden">
+<div class="p-6 border-b border-[#C6C6C8]/30">
+<h3 class="text-[17px] font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-secondaryLabel">history</span>
+                            Version History
+                        </h3>
+</div>
+<div class="divide-y divide-[#C6C6C8]/30">
+<!-- v3 -->
+<div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 text-[13px] font-bold text-label">v3</div>
+<div class="flex flex-col">
+<span class="text-[15px] font-medium">draft <span class="text-tertiaryLabel ml-2 text-[13px] font-normal">(current)</span></span>
+<span class="text-[12px] text-secondaryLabel">2026-05-11 14:42</span>
+</div>
+</div>
+<a class="text-[13px] text-systemBlue font-medium" href="#">詳細を見る</a>
+</div>
+<!-- v2 -->
+<div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 text-[13px] font-bold text-label">v2</div>
+<div class="flex flex-col">
+<span class="text-[15px] font-medium">published</span>
+<span class="text-[12px] text-secondaryLabel">2026-05-08 09:14</span>
+</div>
+</div>
+<a class="text-[13px] text-systemBlue font-medium" href="#">詳細を見る</a>
+</div>
+<!-- v1 -->
+<div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 text-[13px] font-bold text-label">v1</div>
+<div class="flex flex-col">
+<span class="text-[15px] font-medium">published</span>
+<span class="text-[12px] text-secondaryLabel">2026-05-01 17:30</span>
+</div>
+</div>
+<a class="text-[13px] text-systemBlue font-medium" href="#">詳細を見る</a>
+</div>
+<!-- v0 -->
+<div class="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 text-[13px] font-bold text-label">v0</div>
+<div class="flex flex-col">
+<span class="text-[15px] font-medium">draft</span>
+<span class="text-[12px] text-secondaryLabel">2026-04-28 22:01</span>
+</div>
+</div>
+<a class="text-[13px] text-systemBlue font-medium" href="#">詳細を見る</a>
+</div>
+</div>
+</section>
+<!-- Card 4: Publishing Options -->
+<section class="bg-white hairline-border rounded-xl p-6 space-y-6">
+<h3 class="text-[17px] font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-secondaryLabel">tune</span>
+                        Publishing Options
+                    </h3>
+<div class="space-y-6">
+<label class="flex items-start gap-4 cursor-pointer group">
+<div class="mt-1 relative flex items-center justify-center">
+<input checked="" class="w-5 h-5 text-systemBlue border-[#C6C6C8] focus:ring-offset-0 focus:ring-0" name="pub_opt" type="radio"/>
+</div>
+<div class="flex flex-col">
+<span class="text-[15px] font-semibold">今すぐ公開</span>
+<span class="text-[13px] text-secondaryLabel">即座にすべてのユーザーへ表示されます</span>
+</div>
+</label>
+<label class="flex items-start gap-4 opacity-40 cursor-not-allowed">
+<div class="mt-1 relative flex items-center justify-center">
+<input class="w-5 h-5 text-systemBlue border-[#C6C6C8]" disabled="" name="pub_opt" type="radio"/>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex flex-col">
+<span class="text-[15px] font-semibold">予約公開</span>
+<span class="text-[13px] text-secondaryLabel">指定した日時に自動的に公開されます</span>
+</div>
+<div class="flex gap-2">
+<div class="px-3 py-2 bg-secondarySystemBackground border border-[#C6C6C8] rounded text-[13px] w-32">2026/05/12</div>
+<div class="px-3 py-2 bg-secondarySystemBackground border border-[#C6C6C8] rounded text-[13px] w-24">10:00</div>
+</div>
+</div>
+</label>
+<label class="flex items-start gap-4 opacity-40 cursor-not-allowed">
+<div class="mt-1 relative flex items-center justify-center">
+<input class="w-5 h-5 text-systemBlue border-[#C6C6C8]" disabled="" name="pub_opt" type="radio"/>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex flex-col">
+<span class="text-[15px] font-semibold">限定公開 (招待ユーザーのみ)</span>
+<span class="text-[13px] text-secondaryLabel">特定のユーザーまたはリンクを知っている人のみ閲覧可能です</span>
+</div>
+<div class="px-3 py-2 bg-secondarySystemBackground border border-[#C6C6C8] rounded text-[13px] text-tertiaryLabel">
+                                    ユーザーを選択してください...
+                                </div>
+</div>
+</label>
+</div>
+</section>
+<!-- Footer -->
+<footer class="flex flex-col items-center gap-6 pt-4">
+<p class="text-[14px] text-secondaryLabel text-center leading-relaxed">
+                        公開すると、すべての学習者がこのレッスンにアクセスできるようになります。<br/>
+                        以前のバージョンは履歴から確認・復元が可能です。
+                    </p>
+<button class="w-full max-w-[400px] h-[52px] bg-systemBlue text-white text-[17px] font-semibold rounded-xl hover:opacity-90 active:scale-[0.99] transition-all shadow-sm">
+                        v3 を公開
+                    </button>
+</footer>
+</div>
+</main>
+</div>
+</body></html>

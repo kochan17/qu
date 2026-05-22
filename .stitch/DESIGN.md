@@ -5,7 +5,7 @@
 **Design System Asset ID:** `assets/17342615687936833569`
 **Design Philosophy:** "If Apple made a certification study app." Calm, premium, content-first.
 
-> 詳細は `/Users/kotaishida/projects/personal/que/.claude/rules/design-principles.md` を参照。このファイルは Stitch での生成・編集に特化した短縮版。
+> 詳細は `/Users/kotaishida/projects/personal/qu/.claude/rules/design-principles.md` を参照。このファイルは Stitch での生成・編集に特化した短縮版。
 
 ---
 

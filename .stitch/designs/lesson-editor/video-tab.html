@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#007AFF",
+                        systemGreen: "#34C759",
+                        secondaryText: "rgba(60, 60, 67, 0.6)",
+                        separator: "rgba(60, 60, 67, 0.1)",
+                        surface: "#F2F2F7"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Inter", "Hiragino Sans", "sans-serif"],
+                        display: ["Inter", "Hiragino Sans", "sans-serif"],
+                        body: ["Inter", "Hiragino Sans", "sans-serif"],
+                        label: ["Inter", "Hiragino Sans", "sans-serif"],
+                        mono: ["JetBrains Mono", "monospace"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+</head>
+<body class="bg-white text-[#1C1C1E] font-body h-screen flex flex-col overflow-hidden">
+<!-- TopNavBar (Shared Component) -->
+<header class="bg-white/80 backdrop-blur-xl dark:bg-black/80 border-b border-[#3C3C43]/10 dark:border-[#545458]/20 flex justify-between items-center w-full px-6 h-14 z-50 fixed top-0">
+<div class="flex items-center gap-4">
+<span class="text-[22px] font-semibold text-[#007AFF]">Que</span>
+<div class="h-4 w-[1px] bg-separator mx-1"></div>
+<h1 class="text-[17px] font-medium">2進数 / 基数変換</h1>
+<span class="px-2 py-0.5 rounded bg-[#F2F2F7] text-[#3C3C43]/60 text-[11px] font-semibold uppercase tracking-wider">Draft</span>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex gap-8 h-full items-center">
+<a class="text-[#007AFF] border-b-2 border-[#007AFF] font-semibold pb-1 h-full flex items-center mt-1" href="#">Video</a>
+<a class="text-[#3C3C43]/60 dark:text-[#EBEBF5]/60 hover:text-[#3C3C43] dark:hover:text-[#EBEBF5] transition-colors duration-200 h-full flex items-center mt-1" href="#">Course Text</a>
+<a class="text-[#3C3C43]/60 dark:text-[#EBEBF5]/60 hover:text-[#3C3C43] dark:hover:text-[#EBEBF5] transition-colors duration-200 h-full flex items-center mt-1" href="#">Quiz</a>
+<a class="text-[#3C3C43]/60 dark:text-[#EBEBF5]/60 hover:text-[#3C3C43] dark:hover:text-[#EBEBF5] transition-colors duration-200 h-full flex items-center mt-1" href="#">Publish</a>
+</nav>
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-[#3C3C43]/5 transition-colors duration-200">
+<span class="material-symbols-outlined text-[20px]" data-icon="auto_fix">auto_fix</span>
+<span class="text-[13px] font-medium">AIで台本</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-[#3C3C43]/5 transition-colors duration-200">
+<span class="material-symbols-outlined text-[20px]" data-icon="record_voice_over">record_voice_over</span>
+<span class="text-[13px] font-medium">一括TTS</span>
+</button>
+<div class="w-[1px] h-4 bg-separator mx-2"></div>
+<button class="px-4 py-1.5 text-[15px] font-medium rounded-full bg-[#F2F2F7] text-[#1C1C1E] hover:bg-[#E5E5EA] transition-colors">Preview</button>
+<button class="px-4 py-1.5 text-[15px] font-medium rounded-full bg-[#007AFF] text-white hover:bg-[#0062CC] transition-colors">Render</button>
+</div>
+</header>
+<main class="flex flex-1 pt-14 overflow-hidden">
+<!-- Left SideNavBar (Shared Component) -->
+<aside class="bg-[#F2F2F7] dark:bg-[#1C1C1E] border-r border-[#3C3C43]/10 dark:border-[#545458]/20 h-full w-64 flex flex-col shrink-0">
+<div class="p-4 flex justify-between items-center">
+<div>
+<p class="text-[13px] font-medium text-secondaryText uppercase tracking-tight">Scene List</p>
+<p class="text-[17px] font-semibold truncate max-w-[140px]">2進数 / 基数変換</p>
+</div>
+<button class="w-8 h-8 flex items-center justify-center bg-white dark:bg-[#2C2C2E] rounded-full shadow-sm text-[#007AFF]">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto space-y-1">
+<!-- Scene Item 1 -->
+<div class="mx-2 px-3 py-2 flex items-center gap-3 text-[#3C3C43] dark:text-[#EBEBF5] hover:bg-[#3C3C43]/5 rounded-lg transition-colors cursor-pointer group">
+<div class="w-16 h-10 rounded bg-gray-200 flex-shrink-0 relative overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A clean minimalist placeholder image for an education video thumbnail showing dark abstract geometric shapes against a soft grey studio lighting background, echoing high-end tech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUnUN7QfNahcMo6Z1e1V7o70mN_MAGwwk7seUblyC9h5qWW-gAWBuwslc-Y1VtaTP-3ecE79UXU5-4pZaQyX9Q2J0_Huuqd9oOuXe0_Zl1SG5XKt-lwp1EFHCvmsceJlM1qstanEiZ7r1deY3cj6nVOGtI8XEhW0F2FDpi_khhFqJXZsMQv6xv-yHqycoNqeLLarK64tug4EBIPHxjJU_x_14h03927ir5BKjN9N2r8ibf1sIye-YRr_ugH16uEEJSugAvsrzbWXto"/>
+<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/20 transition-opacity">
+<span class="material-symbols-outlined text-white text-xs">play_arrow</span>
+</div>
+</div>
+<div class="min-w-0">
+<p class="text-[13px] font-medium truncate">01 フック</p>
+<p class="text-[11px] opacity-60">0:04</p>
+</div>
+</div>
+<!-- Scene Item 2 (Active) -->
+<div class="bg-white dark:bg-[#2C2C2E] shadow-sm rounded-lg text-[#007AFF] font-medium mx-2 px-3 py-2 flex items-center gap-3">
+<div class="w-16 h-10 rounded bg-[#007AFF]/10 flex-shrink-0 relative overflow-hidden border border-[#007AFF]/20">
+<img class="w-full h-full object-cover" data-alt="A high-quality educational video thumbnail with mathematical notations and clean typography displayed on a crisp white screen under professional studio lighting. The aesthetic is inspired by premium digital learning platforms with soft blue accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCv7cB4WuvHY5QZo7FBFiTlxELWkLVKAiSr4Cf8TSTbn7tpNAG1SdWXlGLFo-2e4f1OR8ZbGA1ovBAbW07myJaVBo1JMIrC9_Hda2AY5xYczFD6djhJj7V5X_KVgytQn1TUi0mTjUZVgpJQS37ixYKEfiqU4psB2lHiAZJOVBLhGabA_Z8IVMd-nJaqr-ph7GwN7O2k4HJ9-sAJ8hT_kbuoZ-rEy4VLLQZ9JZHzN78MzjWEivXMXVfEmtS-TWET2T1r4L4lFKRG46F8"/>
+</div>
+<div class="min-w-0">
+<p class="text-[13px] font-semibold truncate">02 計算の仕組み</p>
+<p class="text-[11px] text-[#007AFF]/70">0:12</p>
+</div>
+</div>
+<!-- Scene Item 3 -->
+<div class="mx-2 px-3 py-2 flex items-center gap-3 text-[#3C3C43] dark:text-[#EBEBF5] hover:bg-[#3C3C43]/5 rounded-lg transition-colors cursor-pointer">
+<div class="w-16 h-10 rounded bg-gray-200 flex-shrink-0 relative overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Minimalist abstract digital art for an educational video scene list thumbnail. Features smooth lighting and high-key white aesthetic with subtle grid lines suggesting a mathematical or data-oriented context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPR8wmuzYoa8IfDy76Mo4ri1RpmN9njWN03tv1yyAaUHMMGrjGADlrRjIxowrB4ttOjpluUGLnutArskS0ZJheoBKD1S_IU_IBHl9TF9zpjJdsgL9qjL46UenpNt9SQS5Pb_cWMrV8lDMPipg3feCqPski4_SfhmYYFGOJ-8w-6DsL5kVE5dSLWKo3njoYRX-M1T_eEMetj70Ziro16VDtVdhbzxM1YWAHv4PKs0uruGT_G0HYgdKhtLOzLLM3GFrit0xcjLrGUSH2"/>
+</div>
+<div class="min-w-0">
+<p class="text-[13px] font-medium truncate">03 例題 1011</p>
+<p class="text-[11px] opacity-60">0:24</p>
+</div>
+</div>
+<!-- Scene Item 4 -->
+<div class="mx-2 px-3 py-2 flex items-center gap-3 text-[#3C3C43] dark:text-[#EBEBF5] hover:bg-[#3C3C43]/5 rounded-lg transition-colors cursor-pointer">
+<div class="w-16 h-10 rounded bg-gray-200 flex-shrink-0 relative overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Clean corporate technical illustration background for video scene list. The image uses a palette of soft whites and blues, appearing like a professional digital whiteboard from a premium learning application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDigqK4qfx8EhMeu9WDMGmH2pNr60CT6jj0O6vBDGV81EXrtmVeDFvfnGS-9xtVrKWv1gZCKM9JLUhgg5JMSrMIdKGjvqr0PY19AXqz_-KpRFpg01GC7VbpyiEZOG5cPs8jN_njkg9K6mTyXYg7BpppcCHVS2v1dGoMrxH5CzmO_mxDPnO8fhC6fXl_ns-X5NgDUClkEzWBBFpP65HfrvivxYUULDoVNq3NYJgoKUMxKKOhAmSpqduEls_dU67eTyUCZxn5rWHsP0jS"/>
+</div>
+<div class="min-w-0">
+<p class="text-[13px] font-medium truncate">06 2進→10進ワーク</p>
+<p class="text-[11px] opacity-60">1:05</p>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-separator bg-white/30 backdrop-blur-sm">
+<button class="w-full py-2 bg-white border border-separator rounded-lg text-[13px] font-medium hover:bg-gray-50 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="layers">layers</span>
+                    Add Scene
+                </button>
+</div>
+</aside>
+<!-- Center Canvas -->
+<section class="flex-1 bg-[#F2F2F7] p-8 flex flex-col items-center justify-center overflow-auto">
+<!-- 16:9 Preview Card -->
+<div class="w-full max-w-4xl aspect-video bg-white rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-separator flex flex-col relative overflow-hidden">
+<div class="flex-1 p-12 flex flex-col items-center justify-center">
+<h2 class="text-2xl font-semibold mb-10 text-[#1C1C1E]">1011<sub class="font-mono text-lg ml-0.5">2</sub> を 10進に</h2>
+<!-- Calculation Table -->
+<div class="grid grid-cols-4 gap-6 mb-10 w-full max-w-md">
+<div class="flex flex-col items-center">
+<span class="font-mono text-sm text-secondaryText mb-2">2<sup class="ml-0.5">3</sup></span>
+<div class="w-14 h-14 rounded-lg bg-[#F2F2F7] flex items-center justify-center font-mono text-2xl font-medium border border-separator">1</div>
+<span class="font-mono text-xs text-secondaryText mt-2">x 8</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-mono text-sm text-secondaryText mb-2">2<sup class="ml-0.5">2</sup></span>
+<div class="w-14 h-14 rounded-lg bg-[#F2F2F7] flex items-center justify-center font-mono text-2xl font-medium border border-separator">0</div>
+<span class="font-mono text-xs text-secondaryText mt-2">x 4</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-mono text-sm text-secondaryText mb-2">2<sup class="ml-0.5">1</sup></span>
+<div class="w-14 h-14 rounded-lg bg-[#F2F2F7] flex items-center justify-center font-mono text-2xl font-medium border border-separator">1</div>
+<span class="font-mono text-xs text-secondaryText mt-2">x 2</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-mono text-sm text-secondaryText mb-2">2<sup class="ml-0.5">0</sup></span>
+<div class="w-14 h-14 rounded-lg bg-[#F2F2F7] flex items-center justify-center font-mono text-2xl font-medium border border-separator">1</div>
+<span class="font-mono text-xs text-secondaryText mt-2">x 1</span>
+</div>
+</div>
+<div class="flex items-center gap-4 text-secondaryText font-mono text-sm mb-8">
+<span>8</span><span>+</span><span>0</span><span>+</span><span>2</span><span>+</span><span>1</span>
+</div>
+<!-- Result Card -->
+<div class="bg-systemGreen/10 border border-systemGreen/20 px-8 py-4 rounded-xl flex items-center gap-4">
+<span class="material-symbols-outlined text-systemGreen" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-mono text-2xl font-semibold text-[#1C1C1E]">1011<sub class="text-sm">2</sub> = 11<sub class="text-sm">10</sub></span>
+</div>
+</div>
+<!-- Video Controls (Mini) -->
+<div class="h-12 bg-white/90 backdrop-blur border-t border-separator px-6 flex items-center gap-4">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary" data-icon="play_arrow" data-weight="fill" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+<div class="flex-1 h-1 bg-gray-200 rounded-full relative">
+<div class="absolute left-0 top-0 h-full w-[85%] bg-primary rounded-full"></div>
+<div class="absolute left-[85%] top-1/2 -translate-y-1/2 w-3 h-3 bg-white border-2 border-primary rounded-full shadow-sm"></div>
+</div>
+<span class="font-mono text-[11px] text-secondaryText">0:10 / 0:12</span>
+<span class="material-symbols-outlined text-[20px] cursor-pointer hover:text-primary" data-icon="settings">settings</span>
+</div>
+</div>
+</section>
+<!-- Right Inspector -->
+<aside class="w-80 border-l border-separator bg-white flex flex-col overflow-y-auto">
+<div class="p-4 border-b border-separator flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-secondaryText" data-icon="tune">tune</span>
+<span class="text-[15px] font-semibold">Inspector</span>
+</div>
+<!-- Scene Info Section -->
+<div class="p-5 border-b border-separator space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="text-[13px] font-semibold text-secondaryText uppercase tracking-wider">Scene Info</h3>
+</div>
+<div class="space-y-2">
+<label class="text-[12px] font-medium text-secondaryText ml-1">Type</label>
+<div class="relative">
+<select class="w-full appearance-none bg-[#F2F2F7] border-none rounded-lg px-3 py-2 text-[14px] focus:ring-2 focus:ring-primary/20">
+<option>Step-by-step Calculation</option>
+<option>Intro / Hook</option>
+<option>Summary</option>
+<option>Quiz Slide</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-secondaryText" data-icon="unfold_more">unfold_more</span>
+</div>
+</div>
+</div>
+<!-- Parameters Section -->
+<div class="p-5 border-b border-separator space-y-4">
+<h3 class="text-[13px] font-semibold text-secondaryText uppercase tracking-wider">Parameters</h3>
+<div class="space-y-4">
+<div class="space-y-2">
+<label class="text-[12px] font-medium text-secondaryText ml-1">Binary Input</label>
+<div class="relative">
+<input class="w-full bg-[#F2F2F7] border-none rounded-lg px-3 py-2 font-mono text-[15px] focus:ring-2 focus:ring-primary/20" type="text" value="1011"/>
+<span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] bg-white px-1.5 py-0.5 rounded border border-separator text-secondaryText">4 digits</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-[12px] font-medium text-secondaryText ml-1">Accent Color</label>
+<div class="flex items-center gap-3 bg-[#F2F2F7] p-2 rounded-lg">
+<div class="w-6 h-6 rounded bg-[#007AFF] border border-black/5"></div>
+<span class="text-[13px] font-mono">#007AFF</span>
+<span class="material-symbols-outlined ml-auto text-[18px] text-secondaryText" data-icon="colorize">colorize</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Narration Section -->
+<div class="p-5 space-y-4">
+<h3 class="text-[13px] font-semibold text-secondaryText uppercase tracking-wider">Narration</h3>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<label class="text-[12px] font-medium text-secondaryText ml-1">Text to Speech</label>
+<div class="flex items-center gap-1.5 px-2 py-0.5 bg-primary/10 text-primary rounded-full">
+<span class="material-symbols-outlined text-[14px]" data-icon="face">face</span>
+<span class="text-[11px] font-medium">Kana (Pro)</span>
+</div>
+</div>
+<textarea class="w-full bg-[#F2F2F7] border-none rounded-lg p-3 text-[14px] leading-relaxed focus:ring-2 focus:ring-primary/20 resize-none" placeholder="Enter narration text here..." rows="5">では、1011という2進数を10進数に変換してみましょう。
+それぞれの桁が持つ「重み」を意識するのがポイントです。
+右から1の位、2の位、4の位、8の位となりますね。</textarea>
+<div class="flex justify-between items-center px-1">
+<span class="text-[11px] text-secondaryText">124 characters</span>
+<button class="text-primary text-[11px] font-semibold hover:underline">Apply to Scene</button>
+</div>
+</div>
+</div>
+</aside>
+</main>
+</body></html>

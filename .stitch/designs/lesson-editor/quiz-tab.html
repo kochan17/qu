@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        label: "#000000",
+                        secondaryLabel: "#3C3C4399",
+                        systemBackground: "#FFFFFF",
+                        secondarySystemBackground: "#F2F2F7",
+                        systemBlue: "#007AFF",
+                        systemGreen: "#34C759",
+                        systemFill: "#7878801F",
+                        separator: "#3C3C431A"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Inter", "Hiragino Sans", "sans-serif"],
+                        display: ["Inter", "Hiragino Sans", "sans-serif"],
+                        body: ["Inter", "Hiragino Sans", "sans-serif"],
+                        label: ["Inter", "Hiragino Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            font-size: 20px;
+        }
+        .glass-nav {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        body {
+            font-family: 'Inter', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', sans-serif;
+            background-color: #FFFFFF;
+            color: #000000;
+        }
+    </style>
+</head>
+<body class="bg-systemBackground overflow-hidden h-screen flex flex-col">
+<!-- TopNavBar (Shared Component) -->
+<header class="bg-white/80 dark:bg-black/80 backdrop-blur-xl docked full-width top-0 sticky z-50 border-b border-[#3C3C43]/10 dark:border-[#545458]/10 flat no shadows flex justify-between items-center w-full px-6 h-14">
+<div class="flex items-center gap-4">
+<nav class="flex items-center gap-2 text-[13px] text-secondaryLabel">
+<span>Admin</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span>基本情報技術者</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-label">数の表現</span>
+</nav>
+<div class="h-4 w-[1px] bg-separator mx-2"></div>
+<div class="flex items-center gap-3">
+<h1 class="font-headline text-[17px] font-semibold tracking-tight text-label">2進数 / 基数変換</h1>
+<span class="px-2 py-0.5 rounded text-[11px] font-medium bg-systemFill text-secondaryLabel">DRAFT</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-1.5 rounded-full text-[13px] font-medium text-systemBlue border border-transparent hover:bg-systemFill transition-colors">
+                AIで初稿生成
+            </button>
+<button class="px-4 py-1.5 rounded-full text-[13px] font-medium text-systemBlue border border-transparent hover:bg-systemFill transition-colors">
+                プレビュー
+            </button>
+<button class="px-5 py-1.5 rounded-full text-[13px] font-semibold bg-systemBlue text-white hover:opacity-90 active:scale-95 transition-all">
+                動画レンダー
+            </button>
+<div class="w-8 h-8 rounded-full bg-systemFill flex items-center justify-center ml-2 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a young Japanese UI designer with a friendly expression, set against a clean minimalist office background with soft cinematic lighting. The image maintains a high-key light-mode aesthetic consistent with Apple design principles, featuring neutral tones and a crisp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVNtJ3iCnpez8jMxaTE9XXMjLaEI1Bynh4Cs6dAQDv_rA0uJVhz9iux3UApsGwkGPjojjNaVNGSUneBCbX-4bEGI5LCf1POshFFO8TH0LmUbUjL1fnfhwPdMOqhwpBPwR46YcRX3lduKzeKYUy_OgpFgVJE8TM10ERblloEP1NX3oREwf0AOrdY6tlHTIqWSdVX5wJBY06Xmd4VB0FPqgN2bpAP8R98ixdJ4aWv99gnNgsTB-76VjP0JgYx-u65dxJnNrn4C3UBWKG"/>
+</div>
+</div>
+</header>
+<!-- Tab Bar -->
+<nav class="flex px-6 border-b border-separator bg-white">
+<div class="flex gap-8">
+<button class="py-3 text-[14px] text-secondaryLabel hover:text-label transition-colors">動画</button>
+<button class="py-3 text-[14px] text-secondaryLabel hover:text-label transition-colors">教材本文</button>
+<button class="py-3 text-[14px] text-systemBlue font-semibold border-b-2 border-systemBlue -mb-[1px]">確認問題</button>
+<button class="py-3 text-[14px] text-secondaryLabel hover:text-label transition-colors">公開</button>
+</div>
+</nav>
+<!-- Main Content Cluster -->
+<main class="flex flex-1 overflow-hidden">
+<!-- Left Sidebar: Problem List -->
+<aside class="w-[380px] flex flex-col border-r border-separator bg-secondarySystemBackground/30">
+<div class="p-5 flex justify-between items-center">
+<div class="flex items-baseline gap-2">
+<span class="text-[20px] font-bold">5</span>
+<span class="text-[13px] text-secondaryLabel">問</span>
+</div>
+<button class="text-[14px] font-medium text-systemBlue flex items-center gap-1 hover:opacity-70">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    問題を追加
+                </button>
+</div>
+<div class="flex-1 overflow-y-auto space-y-1 px-3">
+<!-- Q01 -->
+<div class="h-[88px] p-4 bg-white rounded-lg border border-transparent cursor-pointer hover:border-separator transition-all">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[11px] font-bold text-secondaryLabel">Q01</span>
+<div class="flex gap-1">
+<span class="px-1.5 py-0.5 rounded bg-systemGreen/10 text-systemGreen text-[9px] font-bold">PUBLISHED</span>
+<span class="px-1.5 py-0.5 rounded bg-systemFill text-secondaryLabel text-[9px] font-bold">DRAFT</span>
+</div>
+</div>
+<p class="text-[13px] font-medium truncate mb-2">2進数の 1011 を 10進数に直すと?</p>
+<span class="text-[11px] text-secondaryLabel">4択</span>
+</div>
+<!-- Q02 -->
+<div class="h-[88px] p-4 bg-white rounded-lg border border-transparent cursor-pointer hover:border-separator transition-all">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[11px] font-bold text-secondaryLabel">Q02</span>
+<span class="px-1.5 py-0.5 rounded bg-systemGreen/10 text-systemGreen text-[9px] font-bold">PUBLISHED</span>
+</div>
+<p class="text-[13px] font-medium truncate mb-2">16進数の B を 10進数で表すと?</p>
+<span class="text-[11px] text-secondaryLabel">4択</span>
+</div>
+<!-- Q03 -->
+<div class="h-[88px] p-4 bg-white rounded-lg border border-transparent cursor-pointer hover:border-separator transition-all">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[11px] font-bold text-secondaryLabel">Q03</span>
+<span class="px-1.5 py-0.5 rounded bg-systemFill text-secondaryLabel text-[9px] font-bold">DRAFT</span>
+</div>
+<p class="text-[13px] font-medium truncate mb-2">10進数の 13 を 2進数で表すと?</p>
+<span class="text-[11px] text-secondaryLabel">4択</span>
+</div>
+<!-- Q04 -->
+<div class="h-[88px] p-4 bg-white rounded-lg border border-transparent cursor-pointer hover:border-separator transition-all">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[11px] font-bold text-secondaryLabel">Q04</span>
+<span class="px-1.5 py-0.5 rounded bg-systemFill text-secondaryLabel text-[9px] font-bold">DRAFT</span>
+</div>
+<p class="text-[13px] font-medium truncate mb-2">4 ビットで表せる組み合わせは何通り?</p>
+<span class="text-[11px] text-secondaryLabel">4択</span>
+</div>
+<!-- Q05 (Selected) -->
+<div class="h-[88px] p-4 bg-systemBlue/10 rounded-r-lg border-l-[3px] border-systemBlue cursor-default">
+<div class="flex justify-between items-start mb-1">
+<span class="text-[11px] font-bold text-systemBlue">Q05</span>
+<span class="px-1.5 py-0.5 rounded bg-systemFill text-secondaryLabel text-[9px] font-bold">DRAFT</span>
+</div>
+<p class="text-[13px] font-bold truncate mb-2">次のうち、2進数で正しいのはどれ?</p>
+<span class="text-[11px] text-systemBlue font-medium">4択</span>
+</div>
+</div>
+<div class="p-6 border-t border-separator">
+<button class="w-full py-3 rounded-lg border border-dashed border-separator text-[13px] font-medium text-secondaryLabel hover:bg-white transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                    AI で 5 問追加
+                </button>
+</div>
+</aside>
+<!-- Right Content Area: Edit Form -->
+<section class="flex-1 overflow-y-auto bg-white">
+<div class="max-w-[800px] mx-auto py-10 px-8 space-y-12 pb-32">
+<!-- Section: 問題情報 -->
+<div class="space-y-4">
+<h3 class="text-[13px] font-bold text-secondaryLabel tracking-wider uppercase">問題情報</h3>
+<div class="grid grid-cols-3 gap-8 p-6 bg-secondarySystemBackground/40 rounded-xl">
+<div>
+<label class="block text-[11px] font-semibold text-secondaryLabel mb-2">形式</label>
+<div class="relative">
+<select class="w-full bg-white border border-separator rounded-lg px-3 py-2 text-[14px] appearance-none cursor-pointer focus:outline-none focus:ring-1 focus:ring-systemBlue">
+<option>多肢選択</option>
+<option>記述式</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2.5 text-secondaryLabel pointer-events-none">expand_more</span>
+</div>
+</div>
+<div>
+<label class="block text-[11px] font-semibold text-secondaryLabel mb-2">難易度</label>
+<div class="flex p-1 bg-systemFill rounded-lg">
+<button class="flex-1 py-1 text-[12px] font-medium bg-white rounded shadow-sm">Easy</button>
+<button class="flex-1 py-1 text-[12px] font-medium text-secondaryLabel">Normal</button>
+<button class="flex-1 py-1 text-[12px] font-medium text-secondaryLabel">Hard</button>
+</div>
+</div>
+<div>
+<label class="block text-[11px] font-semibold text-secondaryLabel mb-2">ステータス</label>
+<div class="flex items-center gap-3 py-2">
+<span class="text-[13px] text-secondaryLabel">公開設定</span>
+<div class="w-10 h-6 bg-systemFill rounded-full relative cursor-pointer">
+<div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Section: 問題文 -->
+<div class="space-y-4">
+<h3 class="text-[13px] font-bold text-secondaryLabel tracking-wider uppercase">問題文</h3>
+<textarea class="w-full h-32 p-4 text-[17px] leading-relaxed border border-separator rounded-xl focus:outline-none focus:ring-1 focus:ring-systemBlue resize-none" placeholder="問題を入力してください">次のうち、2進数で正しい表記はどれですか?</textarea>
+</div>
+<!-- Section: 選択肢 -->
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<h3 class="text-[13px] font-bold text-secondaryLabel tracking-wider uppercase">選択肢</h3>
+</div>
+<div class="space-y-2">
+<!-- Option A -->
+<div class="flex items-center gap-4 group">
+<span class="w-8 text-[14px] font-bold text-secondaryLabel">A</span>
+<div class="flex-1 flex items-center border border-separator rounded-xl p-4 bg-white">
+<input class="flex-1 outline-none text-[15px]" type="text" value="1102"/>
+<button class="text-secondaryLabel/40 hover:text-systemBlue transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<!-- Option B (Correct) -->
+<div class="flex items-center gap-4 group">
+<span class="w-8 text-[14px] font-bold text-systemGreen">B</span>
+<div class="flex-1 flex items-center border border-systemGreen rounded-xl p-4 bg-systemGreen/5">
+<input class="flex-1 outline-none text-[15px] bg-transparent" type="text" value="1011"/>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-systemGreen" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<button class="text-secondaryLabel/40 hover:text-systemBlue transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Option C -->
+<div class="flex items-center gap-4 group">
+<span class="w-8 text-[14px] font-bold text-secondaryLabel">C</span>
+<div class="flex-1 flex items-center border border-separator rounded-xl p-4 bg-white">
+<input class="flex-1 outline-none text-[15px]" type="text" value="1234"/>
+<button class="text-secondaryLabel/40 hover:text-systemBlue transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+<!-- Option D -->
+<div class="flex items-center gap-4 group">
+<span class="w-8 text-[14px] font-bold text-secondaryLabel">D</span>
+<div class="flex-1 flex items-center border border-separator rounded-xl p-4 bg-white">
+<input class="flex-1 outline-none text-[15px]" type="text" value="ABCD"/>
+<button class="text-secondaryLabel/40 hover:text-systemBlue transition-colors">
+<span class="material-symbols-outlined">delete</span>
+</button>
+</div>
+</div>
+</div>
+<button class="mt-4 text-[14px] font-medium text-systemBlue flex items-center gap-1 hover:opacity-70">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        選択肢を追加
+                    </button>
+</div>
+<!-- Section: 解説 -->
+<div class="space-y-4">
+<h3 class="text-[13px] font-bold text-secondaryLabel tracking-wider uppercase">解説</h3>
+<textarea class="w-full h-24 p-4 text-[14px] leading-relaxed border border-separator rounded-xl focus:outline-none focus:ring-1 focus:ring-systemBlue bg-secondarySystemBackground/20" placeholder="解説を入力してください">2進数では 0 と 1 しか使えません。1011 は 8+2+1=11 の意味です。</textarea>
+</div>
+<!-- Section: タグ -->
+<div class="space-y-4">
+<h3 class="text-[13px] font-bold text-secondaryLabel tracking-wider uppercase">タグ</h3>
+<div class="flex flex-wrap gap-2 items-center">
+<div class="px-3 py-1 bg-systemFill rounded-full text-[13px] font-medium flex items-center gap-1">
+                            n進数
+                            <span class="material-symbols-outlined text-[14px] cursor-pointer">close</span>
+</div>
+<div class="px-3 py-1 bg-systemFill rounded-full text-[13px] font-medium flex items-center gap-1">
+                            基数変換
+                            <span class="material-symbols-outlined text-[14px] cursor-pointer">close</span>
+</div>
+<input class="text-[13px] outline-none border-b border-transparent focus:border-systemBlue w-20 py-1 ml-2" placeholder="Add..." type="text"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Fixed Bottom Footer for Form Actions -->
+<footer class="fixed bottom-0 right-0 w-[calc(100%-380px)] h-20 bg-white/90 backdrop-blur-xl border-t border-separator px-8 flex items-center justify-between z-40">
+<button class="text-[14px] font-medium text-systemBlue hover:bg-systemFill px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined">auto_fix</span>
+                別の問題で AI に書き直してもらう
+            </button>
+<button class="px-10 py-3 bg-systemBlue text-white font-bold rounded-full text-[15px] hover:opacity-90 active:scale-95 transition-all">
+                保存
+            </button>
+</footer>
+</main>
+</body></html>

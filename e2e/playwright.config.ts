@@ -8,16 +8,38 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: isCI,
   retries: isCI ? 2 : 0,
-  workers: 4,
+  workers: isCI ? 2 : 4,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL,
     trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
   },
   projects: [
     {
-      name: 'chromium',
+      name: 'desktop-chrome',
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'desktop-safari',
+      use: { ...devices['Desktop Safari'] },
+    },
+    {
+      name: 'desktop-firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'tablet-ipad',
+      use: { ...devices['iPad Pro 11'] },
+    },
+    {
+      name: 'mobile-iphone',
+      use: { ...devices['iPhone 14 Pro'] },
+    },
+    {
+      name: 'mobile-android',
+      use: { ...devices['Pixel 7'] },
     },
   ],
 });

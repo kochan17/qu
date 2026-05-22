@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Qu 教材動画 構成フォーマット</title>
+    <style>
+      :root {
+        --bg: #f7f8f5;
+        --paper: #ffffff;
+        --paper-soft: #f0f6f4;
+        --ink: #102a43;
+        --muted: #587083;
+        --line: #d8e2e8;
+        --teal: #126a6f;
+        --green: #18a06f;
+        --orange: #d96f24;
+        --blue: #2f68d8;
+        --shadow: 0 20px 54px rgba(28, 48, 68, 0.1);
+        --radius: 8px;
+        --max: 1120px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background:
+          linear-gradient(rgba(16, 42, 67, 0.045) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(16, 42, 67, 0.045) 1px, transparent 1px),
+          var(--bg);
+        background-size: 44px 44px;
+        color: var(--ink);
+        font-family:
+          -apple-system,
+          BlinkMacSystemFont,
+          "Hiragino Sans",
+          "Yu Gothic",
+          "Noto Sans JP",
+          sans-serif;
+        line-height: 1.75;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border-bottom: 1px solid rgba(16, 42, 67, 0.1);
+        background: rgba(247, 248, 245, 0.9);
+        backdrop-filter: blur(16px);
+      }
+
+      .nav {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        justify-content: space-between;
+        max-width: var(--max);
+        margin: 0 auto;
+        padding: 14px 24px;
+      }
+
+      .brand {
+        font-weight: 900;
+        letter-spacing: 0;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .nav-links a,
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 34px;
+        padding: 0 12px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      main {
+        max-width: var(--max);
+        margin: 0 auto;
+        padding: 40px 24px 96px;
+      }
+
+      section {
+        margin-top: 72px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: minmax(0, 0.95fr) minmax(360px, 1.05fr);
+        gap: 36px;
+        align-items: center;
+        min-height: 720px;
+        margin-top: 0;
+      }
+
+      .hero-copy {
+        max-width: 560px;
+      }
+
+      .eyebrow {
+        color: var(--blue);
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        line-height: 1.18;
+        letter-spacing: 0;
+      }
+
+      h1 {
+        margin-top: 12px;
+        font-size: clamp(42px, 6vw, 72px);
+      }
+
+      h2 {
+        font-size: clamp(30px, 4vw, 46px);
+      }
+
+      h3 {
+        font-size: 22px;
+      }
+
+      p {
+        margin: 0;
+      }
+
+      .lead {
+        margin-top: 22px;
+        color: var(--muted);
+        font-size: 18px;
+        font-weight: 650;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      .frame-card {
+        padding: 22px;
+      }
+
+      .video-frame {
+        position: relative;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background:
+          linear-gradient(rgba(16, 42, 67, 0.055) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(16, 42, 67, 0.055) 1px, transparent 1px),
+          linear-gradient(135deg, #fffaf0 0%, #eff8f5 55%, #eef5ff 100%);
+        background-size: 32px 32px, 32px 32px, 100% 100%;
+      }
+
+      .safe-area {
+        position: absolute;
+        inset: 8%;
+        border: 2px dashed rgba(47, 104, 216, 0.35);
+        border-radius: var(--radius);
+      }
+
+      .title-zone,
+      .visual-zone,
+      .note-zone {
+        position: absolute;
+        border-radius: var(--radius);
+      }
+
+      .title-zone {
+        left: 8%;
+        top: 10%;
+        width: 46%;
+      }
+
+      .title-zone .mini-label {
+        display: inline-flex;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: #dff4f0;
+        color: var(--teal);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .title-zone .mini-title {
+        margin-top: 10px;
+        font-size: clamp(20px, 2.6vw, 34px);
+        line-height: 1.12;
+        font-weight: 950;
+      }
+
+      .visual-zone {
+        right: 8%;
+        top: 18%;
+        width: 34%;
+        height: 56%;
+        padding: 16px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.88);
+        box-shadow: 0 14px 34px rgba(28, 48, 68, 0.12);
+      }
+
+      .switch-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .switch {
+        display: grid;
+        aspect-ratio: 1;
+        place-items: center;
+        border: 1px solid #badbd2;
+        border-radius: 8px;
+        background: #ddf4ec;
+        color: var(--ink);
+        font-weight: 950;
+      }
+
+      .switch.off {
+        border-color: #e6bf9e;
+        background: #fff0e3;
+      }
+
+      .note-zone {
+        left: 8%;
+        bottom: 12%;
+        width: 42%;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .control-dead-zone {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 16%;
+        background: linear-gradient(transparent, rgba(16, 42, 67, 0.24));
+      }
+
+      .section-head {
+        display: grid;
+        grid-template-columns: minmax(0, 0.8fr) minmax(260px, 0.7fr);
+        gap: 28px;
+        align-items: end;
+        margin-bottom: 24px;
+      }
+
+      .section-head p {
+        color: var(--muted);
+        font-weight: 650;
+      }
+
+      .rules-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+
+      .rule {
+        padding: 22px;
+      }
+
+      .rule-number {
+        color: var(--orange);
+        font-size: 13px;
+        font-weight: 950;
+      }
+
+      .rule p {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+
+      .timeline {
+        display: grid;
+        gap: 12px;
+      }
+
+      .step {
+        display: grid;
+        grid-template-columns: 88px minmax(0, 1fr) minmax(260px, 0.75fr);
+        gap: 16px;
+        align-items: stretch;
+        padding: 16px;
+      }
+
+      .time {
+        display: grid;
+        place-items: center;
+        border-radius: var(--radius);
+        background: var(--paper-soft);
+        color: var(--teal);
+        font-weight: 950;
+      }
+
+      .step-main p,
+      .step-visual {
+        color: var(--muted);
+        font-size: 15px;
+      }
+
+      .step-visual {
+        display: grid;
+        place-items: center start;
+        min-height: 70px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #fbfcfd;
+        font-weight: 800;
+      }
+
+      .pattern-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+
+      .pattern {
+        padding: 24px;
+      }
+
+      .pattern .when {
+        margin-top: 12px;
+        color: var(--muted);
+        font-size: 15px;
+      }
+
+      .pattern ol {
+        margin: 18px 0 0;
+        padding-left: 22px;
+      }
+
+      .pattern li {
+        padding-left: 4px;
+        font-weight: 750;
+      }
+
+      .do-dont {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .list-card {
+        padding: 24px;
+      }
+
+      .list-card ul {
+        margin: 16px 0 0;
+        padding-left: 20px;
+      }
+
+      .list-card li {
+        margin-top: 8px;
+      }
+
+      .ok {
+        border-top: 5px solid var(--green);
+      }
+
+      .ng {
+        border-top: 5px solid var(--orange);
+      }
+
+      .spec-table {
+        width: 100%;
+        border-collapse: collapse;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--paper);
+      }
+
+      .spec-table th,
+      .spec-table td {
+        padding: 16px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .spec-table th {
+        width: 210px;
+        background: var(--paper-soft);
+        color: var(--teal);
+      }
+
+      .spec-table tr:last-child th,
+      .spec-table tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .callout {
+        padding: 28px;
+        border: 2px solid rgba(24, 160, 111, 0.28);
+        background: #eef9f5;
+      }
+
+      @media (max-width: 860px) {
+        .hero,
+        .section-head,
+        .rules-grid,
+        .pattern-grid,
+        .do-dont {
+          grid-template-columns: 1fr;
+        }
+
+        .nav {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .step {
+          grid-template-columns: 1fr;
+        }
+
+        .time {
+          min-height: 42px;
+          place-items: center start;
+          padding-left: 14px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        main {
+          padding-inline: 24px;
+        }
+
+        .hero {
+          gap: 34px;
+          min-height: auto;
+          padding-block: 64px 44px;
+        }
+
+        h1 {
+          font-size: 46px;
+        }
+
+        .frame-card {
+          padding: 12px;
+        }
+
+        .title-zone {
+          left: 7%;
+          top: 9%;
+          width: 50%;
+        }
+
+        .title-zone .mini-label {
+          padding: 3px 6px;
+          font-size: 9px;
+        }
+
+        .title-zone .mini-title {
+          margin-top: 6px;
+          font-size: 18px;
+        }
+
+        .visual-zone {
+          right: 7%;
+          top: 15%;
+          width: 36%;
+          height: 58%;
+          padding: 8px;
+        }
+
+        .visual-zone .tag {
+          min-height: 24px;
+          padding: 0 7px;
+          font-size: 9px;
+        }
+
+        .switch-grid {
+          gap: 4px;
+          margin-top: 8px;
+        }
+
+        .switch {
+          border-radius: 6px;
+          font-size: 12px;
+        }
+
+        .note-zone {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav">
+        <div class="brand">Qu Lesson Video Format</div>
+        <div class="nav-links" aria-label="ページ内ナビゲーション">
+          <a href="#layout">画面構成</a>
+          <a href="#concept">概念説明</a>
+          <a href="#patterns">話題別テンプレ</a>
+          <a href="#rules">制作ルール</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="eyebrow">教材動画を作る前に決めるもの</div>
+          <h1>まず構成を固定してから、動画を作る</h1>
+          <p class="lead">
+            N進数のような概念説明では、最初から細かい文章を読ませると理解が重くなります。
+            先に画面の型、話す順番、図の置き場を決めておくと、自然言語で依頼しても教材の品質がぶれにくくなります。
+          </p>
+        </div>
+
+        <div class="frame-card card" id="layout">
+          <div class="video-frame" aria-label="教材動画の推奨レイアウト">
+            <div class="safe-area"></div>
+            <div class="title-zone">
+              <span class="mini-label">基礎理論</span>
+              <div class="mini-title">N進数は数え方のルール</div>
+            </div>
+            <div class="visual-zone">
+              <span class="tag">図は中央から上に置く</span>
+              <div class="switch-grid">
+                <div class="switch">1</div>
+                <div class="switch off">0</div>
+                <div class="switch">1</div>
+                <div class="switch">1</div>
+                <div class="switch off">0</div>
+                <div class="switch">1</div>
+                <div class="switch off">0</div>
+                <div class="switch off">0</div>
+              </div>
+            </div>
+            <div class="note-zone">見出しは1行から2行まで。重要な図や数字は動画コントロールに隠れる下部へ置かない。</div>
+            <div class="control-dead-zone" aria-hidden="true"></div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <h2>画面構成の基本ルール</h2>
+          <p>動画の1カットは「見出し」「図」「補助説明」の3点に絞ります。余白は情報量を減らすためではなく、どこを見ればよいかを明確にするために使います。</p>
+        </div>
+        <div class="rules-grid">
+          <article class="rule card">
+            <div class="rule-number">RULE 01</div>
+            <h3>見出しは左上、短く</h3>
+            <p>H1は1行、長くても2行。引用符や長い修飾語で不自然に折り返さない。</p>
+          </article>
+          <article class="rule card">
+            <div class="rule-number">RULE 02</div>
+            <h3>図は中央から上</h3>
+            <p>学習者が最初に見る図は画面の中央から上に置く。下端はプレイヤーUIに隠れる前提で避ける。</p>
+          </article>
+          <article class="rule card">
+            <div class="rule-number">RULE 03</div>
+            <h3>1カット1メッセージ</h3>
+            <p>同じ画面で定義、例、注意点を全部出さない。順番に見せて認知負荷を下げる。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="concept">
+        <div class="section-head">
+          <h2>概念説明の標準構成</h2>
+          <p>N進数、ビット、データベースの正規化、ネットワーク階層など「まず概念をつかむ」教材はこの型を使います。</p>
+        </div>
+
+        <div class="timeline">
+          <article class="step card">
+            <div class="time">0-5s</div>
+            <div class="step-main">
+              <h3>1. ひとことで定義</h3>
+              <p>最初に「これは何の話か」だけを言う。細かい説明はまだ出さない。</p>
+            </div>
+            <div class="step-visual">例: N進数 = 数え方のルール</div>
+          </article>
+
+          <article class="step card">
+            <div class="time">5-12s</div>
+            <div class="step-main">
+              <h3>2. 身近な比喩かモデル</h3>
+              <p>抽象語を図に置き換える。N進数ならスイッチ、正規化なら整理棚のように扱う。</p>
+            </div>
+            <div class="step-visual">スイッチのON/OFF、カード、数直線</div>
+          </article>
+
+          <article class="step card">
+            <div class="time">12-22s</div>
+            <div class="step-main">
+              <h3>3. ルールを1つずつ見せる</h3>
+              <p>桁の重み、繰り上がり、記号の種類など、理解に必要なルールを分割する。</p>
+            </div>
+            <div class="step-visual">右から 1, 2, 4, 8 の桁カード</div>
+          </article>
+
+          <article class="step card">
+            <div class="time">22-32s</div>
+            <div class="step-main">
+              <h3>4. 小さい具体例で確認</h3>
+              <p>いきなり大きな数にしない。2進数 1011 = 11 のように、見て足せる例にする。</p>
+            </div>
+            <div class="step-visual">8 + 0 + 2 + 1 = 11</div>
+          </article>
+
+          <article class="step card">
+            <div class="time">32-40s</div>
+            <div class="step-main">
+              <h3>5. 同じ量を別表記で並べる</h3>
+              <p>最後に「表記が違うだけ」という感覚を作る。次の教材への橋渡しもここで行う。</p>
+            </div>
+            <div class="step-visual">17 = 10001 = 11</div>
+          </article>
+        </div>
+      </section>
+
+      <section id="patterns">
+        <div class="section-head">
+          <h2>話題別テンプレート</h2>
+          <p>教材の種類によって、同じ動画構成を使い回さない。自然言語で依頼するときも、まずこの型を選びます。</p>
+        </div>
+
+        <div class="pattern-grid">
+          <article class="pattern card">
+            <span class="tag">概念理解</span>
+            <h3>N進数、ビット、正規化、OSI参照モデル</h3>
+            <p class="when">抽象概念を最初に理解させたいとき。</p>
+            <ol>
+              <li>ひとことで定義</li>
+              <li>身近なモデル</li>
+              <li>構成要素</li>
+              <li>小さい例</li>
+              <li>まとめと次の問い</li>
+            </ol>
+          </article>
+
+          <article class="pattern card">
+            <span class="tag">手順理解</span>
+            <h3>基数変換、SQL実行順、探索アルゴリズム</h3>
+            <p class="when">順番通りに操作すれば解けるもの。</p>
+            <ol>
+              <li>ゴールを見せる</li>
+              <li>入力と出力を分ける</li>
+              <li>手順を3から5個に区切る</li>
+              <li>1問だけ通しで解く</li>
+              <li>チェック問題へつなぐ</li>
+            </ol>
+          </article>
+
+          <article class="pattern card">
+            <span class="tag">比較理解</span>
+            <h3>2進/10進/16進、TCP/UDP、暗号方式</h3>
+            <p class="when">似たものの違いを整理したいとき。</p>
+            <ol>
+              <li>比較軸を先に出す</li>
+              <li>横並びで同じ順番に説明</li>
+              <li>違いを色で強調</li>
+              <li>使い分けを一言で示す</li>
+              <li>誤解しやすい点を潰す</li>
+            </ol>
+          </article>
+
+          <article class="pattern card">
+            <span class="tag">暗記整理</span>
+            <h3>頻出用語、法律、セキュリティ分類</h3>
+            <p class="when">理解よりも分類と想起が重要なもの。</p>
+            <ol>
+              <li>全体マップを出す</li>
+              <li>3から5個にチャンク化</li>
+              <li>語呂ではなく意味で結ぶ</li>
+              <li>空欄で思い出させる</li>
+              <li>確認問題へつなぐ</li>
+            </ol>
+          </article>
+        </div>
+      </section>
+
+      <section id="rules">
+        <div class="section-head">
+          <h2>制作ルール</h2>
+          <p>AIに自然言語で作らせる前提なら、守るべき制約を先に明文化しておく必要があります。</p>
+        </div>
+
+        <table class="spec-table">
+          <tbody>
+            <tr>
+              <th>画面サイズ</th>
+              <td>16:9、1920x1080。重要要素は上下左右8%の安全領域内に置く。</td>
+            </tr>
+            <tr>
+              <th>見出し</th>
+              <td>H1は14文字前後を目安にする。長い説明文を見出しに入れない。</td>
+            </tr>
+            <tr>
+              <th>図の位置</th>
+              <td>主役の図は画面中央から上に置く。下16%は動画コントロールの被りを想定して空ける。</td>
+            </tr>
+            <tr>
+              <th>文字量</th>
+              <td>1カットあたり本文は2行まで。読ませる文章はテキスト教材に寄せる。</td>
+            </tr>
+            <tr>
+              <th>色</th>
+              <td>背景は明るく、強調色は2色まで。黒い大面積背景は避け、必要な場合だけ小さく使う。</td>
+            </tr>
+            <tr>
+              <th>確認</th>
+              <td>レンダリング前に、初期フレーム、各シーン中盤、最終フレームのスクリーンショットを確認する。</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section>
+        <div class="do-dont">
+          <article class="list-card card ok">
+            <h3>OK</h3>
+            <ul>
+              <li>タイトル、図、補助説明の位置を固定する</li>
+              <li>図だけ見ても意味が追えるようにする</li>
+              <li>細かい文章はテキスト教材へ逃がす</li>
+              <li>動画では理解の入口と流れを担当する</li>
+            </ul>
+          </article>
+          <article class="list-card card ng">
+            <h3>NG</h3>
+            <ul>
+              <li>見出しが変な位置で改行される</li>
+              <li>主役の図が画面下部に寄りすぎる</li>
+              <li>1画面に定義、例、注意点を全部入れる</li>
+              <li>黒背景や強い装飾で教材内容よりUIが目立つ</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section>
+        <div class="callout card">
+          <h2>次にやること</h2>
+          <p class="lead">
+            N進数の動画は、このページの「概念説明の標準構成」に合わせて作り直します。
+            具体的には、見出しを短くし、図を画面中央から上に固定し、下部には重要情報を置かない構成にします。
+          </p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

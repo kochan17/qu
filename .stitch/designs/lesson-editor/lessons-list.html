@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Que Admin Console - Lesson Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              label: "#000000",
+              secondaryLabel: "rgba(60, 60, 67, 0.6)",
+              tertiaryLabel: "rgba(60, 60, 67, 0.3)",
+              systemBlue: "#007AFF",
+              systemGreen: "#34C759",
+              systemGray: "#8E8E93",
+              systemBackground: "#FFFFFF",
+              secondarySystemBackground: "#F2F2F7",
+              separator: "rgba(60, 60, 67, 0.12)",
+              itPassport: "#64D2FF",
+              feIndigo: "#5E5CE6"
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "12px",
+              "xl": "1.5rem",
+              "full": "9999px"
+            },
+            fontFamily: {
+              headline: ["Inter", "SF Pro Display", "Hiragino Sans", "sans-serif"],
+              display: ["Inter", "SF Pro Display", "Hiragino Sans", "sans-serif"],
+              body: ["Inter", "SF Pro Text", "Hiragino Sans", "sans-serif"],
+              label: ["Inter", "SF Pro Text", "Hiragino Sans", "sans-serif"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', 'SF Pro Display', 'Hiragino Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+        .hairline-border { border: 0.5px solid rgba(60, 60, 67, 0.12); }
+        .hairline-b { border-bottom: 0.5px solid rgba(60, 60, 67, 0.12); }
+        .hairline-r { border-right: 0.5px solid rgba(60, 60, 67, 0.12); }
+    </style>
+</head>
+<body class="bg-white text-label antialiased">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-[260px] flex flex-col py-6 px-4 space-y-2 bg-white/80 backdrop-blur-xl border-r border-gray-200/50 z-50">
+<div class="px-4 mb-8">
+<h1 class="text-[22px] font-semibold text-label tracking-tight">shikaq</h1>
+<p class="text-[13px] text-gray-500 font-medium">Admin Dashboard</p>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Navigation Items Mapping from JSON -->
+<a class="flex items-center space-x-3 px-3 py-2 text-gray-500 hover:bg-gray-100 transition-colors duration-200 rounded-lg text-[17px] font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span>Today</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-gray-500 hover:bg-gray-100 transition-colors duration-200 rounded-lg text-[17px] font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
+<span>Lesson List</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-gray-500 hover:bg-gray-100 transition-colors duration-200 rounded-lg text-[17px] font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="rate_review">rate_review</span>
+<span>Review List</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-gray-500 hover:bg-gray-100 transition-colors duration-200 rounded-lg text-[17px] font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+<span>AI Q&amp;A</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-gray-500 hover:bg-gray-100 transition-colors duration-200 rounded-lg text-[17px] font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="record_voice_over">record_voice_over</span>
+<span>Audio Commentary</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-gray-500 hover:bg-gray-100 transition-colors duration-200 rounded-lg text-[17px] font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="bookmark">bookmark</span>
+<span>Bookmarks</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-gray-500 hover:bg-gray-100 transition-colors duration-200 rounded-lg text-[17px] font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span>History</span>
+</a>
+<!-- Active State: Admin -->
+<a class="flex items-center space-x-3 px-3 py-2 bg-[#007AFF]/10 text-[#007AFF] rounded-lg text-[17px] font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="admin_panel_settings">admin_panel_settings</span>
+<span>Admin</span>
+</a>
+</nav>
+<div class="pt-4 border-t border-gray-100">
+<div class="flex items-center space-x-3 px-3">
+<img alt="Administrator Profile" class="w-10 h-10 rounded-full object-cover" data-alt="A clean, professional headshot of a modern office professional with a neutral expression. The lighting is bright and even, characteristic of a high-end corporate portrait. The background is a soft-focus minimalist office interior in shades of white and light grey, maintaining the Apple-inspired aesthetic of clarity and professionalism." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3vg32QsK1DlsI6KdXbu-c9ZOFPSuJ4THZhh0h1G-hejlK7rIOp8yXiBhJI14xLQVy2I7P6i8C_x547w7RcJ6wP_GtI5Tgj1-cf5fnDM8hcfi11rfnxu1cXFuVflXsgryGHFAOGzV_0-7AcHqZGPImnENxGysjwE-JBP2bQEq9YtwtwWsA0Jo_mwAEoQeEXq3jmHzAlIDukyv_6pyFXCE9yCtVF2yqZlVbdscxH67oJ0Gi7hhRcmwcRl7bW1xWIgfJRl6QY8L1FlQG"/>
+<div class="flex-1 overflow-hidden">
+<p class="text-[15px] font-semibold truncate">Administrator</p>
+<p class="text-[12px] text-secondaryLabel truncate">shikaq Admin</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-[260px] h-16 bg-white/80 backdrop-blur-xl flex items-center justify-between px-8 z-40 border-b border-gray-200/50">
+<div class="flex items-center space-x-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-tertiaryLabel" data-icon="search">search</span>
+<input class="w-full bg-secondarySystemBackground border-none rounded-lg py-1.5 pl-10 pr-4 text-[15px] focus:ring-1 focus:ring-systemBlue" placeholder="Search lessons..." type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-6 ml-4">
+<button class="text-gray-500 hover:opacity-70 transition-opacity">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-gray-500 hover:opacity-70 transition-opacity">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-8 w-px bg-separator"></div>
+<p class="text-[17px] font-medium text-systemBlue">Admin Console</p>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-[260px] pt-16 min-h-screen">
+<div class="px-10 py-12">
+<!-- Page Header -->
+<div class="flex items-end justify-between mb-10">
+<div>
+<h2 class="text-[34px] font-semibold tracking-tight leading-tight">レッスン管理</h2>
+<p class="text-[17px] text-secondaryLabel mt-1">24 件のレッスンを管理中</p>
+</div>
+<div class="flex items-center space-x-3">
+<!-- Filter Chips -->
+<div class="flex space-x-2 mr-4">
+<button class="px-4 py-1.5 rounded-full hairline-border text-[14px] font-medium flex items-center space-x-1 hover:bg-gray-50">
+<span>資格</span> <span class="material-symbols-outlined text-[18px]" data-icon="expand_more">expand_more</span>
+</button>
+<button class="px-4 py-1.5 rounded-full hairline-border text-[14px] font-medium flex items-center space-x-1 hover:bg-gray-50">
+<span>ステータス</span> <span class="material-symbols-outlined text-[18px]" data-icon="expand_more">expand_more</span>
+</button>
+<button class="px-4 py-1.5 rounded-full hairline-border text-[14px] font-medium flex items-center space-x-1 hover:bg-gray-50">
+<span>並び</span> <span class="material-symbols-outlined text-[18px]" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+<button class="bg-systemBlue text-white px-5 py-2 rounded-full text-[15px] font-semibold flex items-center space-x-2 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+<span>新規レッスン</span>
+</button>
+</div>
+</div>
+<!-- Stats Row -->
+<div class="grid grid-cols-4 gap-6 mb-12">
+<div class="p-6 hairline-border bg-white rounded-lg">
+<p class="text-secondaryLabel text-[13px] font-semibold uppercase tracking-wider mb-1">Total</p>
+<p class="text-[32px] font-semibold">24</p>
+</div>
+<div class="p-6 hairline-border bg-white rounded-lg">
+<p class="text-secondaryLabel text-[13px] font-semibold uppercase tracking-wider mb-1">Published</p>
+<p class="text-[32px] font-semibold text-systemGreen">18</p>
+</div>
+<div class="p-6 hairline-border bg-white rounded-lg">
+<p class="text-secondaryLabel text-[13px] font-semibold uppercase tracking-wider mb-1">In Progress</p>
+<p class="text-[32px] font-semibold text-systemBlue">5</p>
+</div>
+<div class="p-6 hairline-border bg-white rounded-lg">
+<p class="text-secondaryLabel text-[13px] font-semibold uppercase tracking-wider mb-1">Archived</p>
+<p class="text-[32px] font-semibold text-systemGray">1</p>
+</div>
+</div>
+<!-- List Table -->
+<div class="bg-white">
+<!-- Table Headers -->
+<div class="flex items-center px-4 py-3 hairline-b text-secondaryLabel text-[13px] font-semibold uppercase tracking-wider">
+<div class="w-16"></div>
+<div class="flex-1 px-4">レッスン情報</div>
+<div class="w-36 px-4">ステータス</div>
+<div class="w-24 px-4 text-right">動画長</div>
+<div class="w-24 px-4 text-right">再生数</div>
+<div class="w-32 px-4 text-right">更新日</div>
+<div class="w-12"></div>
+</div>
+<!-- Rows -->
+<!-- Row 1 -->
+<div class="flex items-center px-4 h-[96px] hairline-b hover:bg-gray-50 transition-colors group">
+<div class="w-16 h-10 rounded overflow-hidden">
+<div class="w-full h-full bg-gradient-to-br from-feIndigo to-indigo-300"></div>
+</div>
+<div class="flex-1 px-4">
+<div class="flex items-center space-x-2">
+<span class="w-2 h-2 rounded-full bg-feIndigo"></span>
+<p class="text-[17px] font-semibold">2進数 / 基数変換</p>
+</div>
+<p class="text-[14px] text-secondaryLabel ml-4">基本情報 / 数の表現</p>
+</div>
+<div class="w-36 px-4">
+<span class="px-3 py-1 rounded-full bg-systemGreen/10 text-systemGreen text-[13px] font-semibold">Published</span>
+</div>
+<div class="w-24 px-4 text-right text-[15px] font-medium text-secondaryLabel">02:51</div>
+<div class="w-24 px-4 text-right text-[15px] font-medium">14 views</div>
+<div class="w-32 px-4 text-right text-[14px] text-secondaryLabel">2023.10.24</div>
+<div class="w-12 text-right">
+<span class="material-symbols-outlined text-tertiaryLabel group-hover:text-systemBlue transition-colors" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="flex items-center px-4 h-[96px] hairline-b hover:bg-gray-50 transition-colors group">
+<div class="w-16 h-10 rounded overflow-hidden">
+<div class="w-full h-full bg-gradient-to-br from-feIndigo via-purple-300 to-feIndigo"></div>
+</div>
+<div class="flex-1 px-4">
+<div class="flex items-center space-x-2">
+<span class="w-2 h-2 rounded-full bg-feIndigo"></span>
+<p class="text-[17px] font-semibold">論理演算と真理表</p>
+</div>
+<p class="text-[14px] text-secondaryLabel ml-4">基本情報 / 数の表現</p>
+</div>
+<div class="w-36 px-4 flex items-center space-x-2">
+<span class="px-3 py-1 rounded-full bg-systemBlue/10 text-systemBlue text-[13px] font-semibold flex items-center">
+<span class="material-symbols-outlined text-[14px] animate-spin mr-1" data-icon="progress_activity">progress_activity</span> Rendering
+                        </span>
+</div>
+<div class="w-24 px-4 text-right text-[15px] font-medium text-tertiaryLabel">--:--</div>
+<div class="w-24 px-4 text-right text-[15px] font-medium">0 views</div>
+<div class="w-32 px-4 text-right text-[14px] text-secondaryLabel">2023.10.24</div>
+<div class="w-12 text-right">
+<span class="material-symbols-outlined text-tertiaryLabel" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="flex items-center px-4 h-[96px] hairline-b hover:bg-gray-50 transition-colors group">
+<div class="w-16 h-10 rounded overflow-hidden">
+<div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300"></div>
+</div>
+<div class="flex-1 px-4">
+<div class="flex items-center space-x-2">
+<span class="w-2 h-2 rounded-full bg-feIndigo"></span>
+<p class="text-[17px] font-semibold">CPU パイプライン</p>
+</div>
+<p class="text-[14px] text-secondaryLabel ml-4">基本情報 / ハードウェア</p>
+</div>
+<div class="w-36 px-4">
+<span class="px-3 py-1 rounded-full bg-gray-100 text-gray-500 text-[13px] font-semibold">Draft</span>
+</div>
+<div class="w-24 px-4 text-right text-[15px] font-medium text-tertiaryLabel">04:15</div>
+<div class="w-24 px-4 text-right text-[15px] font-medium">0 views</div>
+<div class="w-32 px-4 text-right text-[14px] text-secondaryLabel">2023.10.23</div>
+<div class="w-12 text-right">
+<span class="material-symbols-outlined text-tertiaryLabel" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Row 4 -->
+<div class="flex items-center px-4 h-[96px] hairline-b hover:bg-gray-50 transition-colors group">
+<div class="w-16 h-10 rounded overflow-hidden">
+<div class="w-full h-full bg-gradient-to-br from-indigo-500 to-blue-400"></div>
+</div>
+<div class="flex-1 px-4">
+<div class="flex items-center space-x-2">
+<span class="w-2 h-2 rounded-full bg-feIndigo"></span>
+<p class="text-[17px] font-semibold">ソートアルゴリズム</p>
+</div>
+<p class="text-[14px] text-secondaryLabel ml-4">基本情報 / アルゴリズム</p>
+</div>
+<div class="w-36 px-4">
+<span class="px-3 py-1 rounded-full bg-systemGreen/10 text-systemGreen text-[13px] font-semibold">Published</span>
+</div>
+<div class="w-24 px-4 text-right text-[15px] font-medium text-secondaryLabel">04:12</div>
+<div class="w-24 px-4 text-right text-[15px] font-medium">47 views</div>
+<div class="w-32 px-4 text-right text-[14px] text-secondaryLabel">2023.10.22</div>
+<div class="w-12 text-right">
+<span class="material-symbols-outlined text-tertiaryLabel" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Row 5 -->
+<div class="flex items-center px-4 h-[96px] hairline-b hover:bg-gray-50 transition-colors group">
+<div class="w-16 h-10 rounded overflow-hidden">
+<div class="w-full h-full bg-gradient-to-br from-itPassport to-teal-100"></div>
+</div>
+<div class="flex-1 px-4">
+<div class="flex items-center space-x-2">
+<span class="w-2 h-2 rounded-full bg-itPassport"></span>
+<p class="text-[17px] font-semibold">ストラテジ</p>
+</div>
+<p class="text-[14px] text-secondaryLabel ml-4">IT パスポート / マネジメント</p>
+</div>
+<div class="w-36 px-4">
+<span class="px-3 py-1 rounded-full bg-amber-100 text-amber-600 text-[13px] font-semibold">Review</span>
+</div>
+<div class="w-24 px-4 text-right text-[15px] font-medium text-secondaryLabel">05:20</div>
+<div class="w-24 px-4 text-right text-[15px] font-medium">0 views</div>
+<div class="w-32 px-4 text-right text-[14px] text-secondaryLabel">2023.10.21</div>
+<div class="w-12 text-right">
+<span class="material-symbols-outlined text-tertiaryLabel" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Row 6 -->
+<div class="flex items-center px-4 h-[96px] hairline-b hover:bg-gray-50 transition-colors group">
+<div class="w-16 h-10 rounded overflow-hidden">
+<div class="w-full h-full bg-gradient-to-br from-teal-300 to-itPassport"></div>
+</div>
+<div class="flex-1 px-4">
+<div class="flex items-center space-x-2">
+<span class="w-2 h-2 rounded-full bg-itPassport"></span>
+<p class="text-[17px] font-semibold">RAM と ROM</p>
+</div>
+<p class="text-[14px] text-secondaryLabel ml-4">IT パスポート / ハードウェア</p>
+</div>
+<div class="w-36 px-4">
+<span class="px-3 py-1 rounded-full bg-gray-100 text-gray-500 text-[13px] font-semibold">Draft</span>
+</div>
+<div class="w-24 px-4 text-right text-[15px] font-medium text-secondaryLabel">02:30</div>
+<div class="w-24 px-4 text-right text-[15px] font-medium">0 views</div>
+<div class="w-32 px-4 text-right text-[14px] text-secondaryLabel">2023.10.20</div>
+<div class="w-12 text-right">
+<span class="material-symbols-outlined text-tertiaryLabel" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Row 7 -->
+<div class="flex items-center px-4 h-[96px] hairline-b hover:bg-gray-50 transition-colors group">
+<div class="w-16 h-10 rounded overflow-hidden">
+<div class="w-full h-full bg-gradient-to-br from-feIndigo to-purple-500"></div>
+</div>
+<div class="flex-1 px-4">
+<div class="flex items-center space-x-2">
+<span class="w-2 h-2 rounded-full bg-feIndigo"></span>
+<p class="text-[17px] font-semibold">SI 単位</p>
+</div>
+<p class="text-[14px] text-secondaryLabel ml-4">基本情報 / 数の表現</p>
+</div>
+<div class="w-36 px-4">
+<span class="px-3 py-1 rounded-full bg-systemGreen/10 text-systemGreen text-[13px] font-semibold">Published</span>
+</div>
+<div class="w-24 px-4 text-right text-[15px] font-medium text-secondaryLabel">03:01</div>
+<div class="w-24 px-4 text-right text-[15px] font-medium">21 views</div>
+<div class="w-32 px-4 text-right text-[14px] text-secondaryLabel">2023.10.19</div>
+<div class="w-12 text-right">
+<span class="material-symbols-outlined text-tertiaryLabel" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+<!-- Row 8 -->
+<div class="flex items-center px-4 h-[96px] hover:bg-gray-50 transition-colors group">
+<div class="w-16 h-10 rounded overflow-hidden">
+<div class="w-full h-full bg-gradient-to-br from-teal-400 to-blue-200"></div>
+</div>
+<div class="flex-1 px-4">
+<div class="flex items-center space-x-2">
+<span class="w-2 h-2 rounded-full bg-itPassport"></span>
+<p class="text-[17px] font-semibold">ネットワーク階層</p>
+</div>
+<p class="text-[14px] text-secondaryLabel ml-4">IT パスポート / ネットワーク</p>
+</div>
+<div class="w-36 px-4">
+<span class="px-3 py-1 rounded-full bg-systemGreen/10 text-systemGreen text-[13px] font-semibold">Published</span>
+</div>
+<div class="w-24 px-4 text-right text-[15px] font-medium text-secondaryLabel">03:48</div>
+<div class="w-24 px-4 text-right text-[15px] font-medium">38 views</div>
+<div class="w-32 px-4 text-right text-[14px] text-secondaryLabel">2023.10.18</div>
+<div class="w-12 text-right">
+<span class="material-symbols-outlined text-tertiaryLabel" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Pagination Footer -->
+<footer class="flex items-center justify-between py-8 mt-4 hairline-t">
+<div class="text-[14px] text-secondaryLabel">
+                    Showing 1-8 of 24
+                </div>
+<div class="flex items-center space-x-6">
+<div class="flex items-center space-x-2 text-[14px] text-secondaryLabel">
+<span>Items per page:</span>
+<select class="bg-transparent border-none focus:ring-0 text-label font-medium py-0">
+<option>8</option>
+<option>16</option>
+<option>50</option>
+</select>
+</div>
+<div class="flex items-center space-x-2">
+<button class="p-2 rounded-full hover:bg-gray-100 text-tertiaryLabel">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="p-2 rounded-full hover:bg-gray-100 text-systemBlue">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</footer>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #f7f3e8;
+        color: #17324d;
+        font-family:
+          -apple-system,
+          BlinkMacSystemFont,
+          "Hiragino Sans",
+          "Yu Gothic",
+          "Noto Sans JP",
+          sans-serif;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background:
+          linear-gradient(rgba(23, 50, 77, 0.055) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(23, 50, 77, 0.055) 1px, transparent 1px),
+          linear-gradient(135deg, #fffaf0 0%, #f2f8f7 52%, #eef5ff 100%);
+        background-size: 64px 64px, 64px 64px, 100% 100%;
+      }
+
+      .clip {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+      }
+
+      #scene-title {
+        opacity: 1;
+      }
+
+      .safe {
+        position: absolute;
+        inset: 74px 104px;
+      }
+
+      .eyebrow,
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        width: max-content;
+        min-height: 54px;
+        padding: 0 22px;
+        border: 2px solid rgba(21, 111, 122, 0.22);
+        border-radius: 18px;
+        background: #e4f5f2;
+        color: #12606a;
+        font-size: 28px;
+        font-weight: 800;
+      }
+
+      h1 {
+        margin-top: 22px;
+        max-width: 1030px;
+        font-size: 96px;
+        line-height: 1.08;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        max-width: 1120px;
+        font-size: 70px;
+        line-height: 1.14;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        margin-top: 22px;
+        max-width: 900px;
+        color: #465d72;
+        font-size: 34px;
+        line-height: 1.5;
+        font-weight: 650;
+      }
+
+      .board {
+        border: 2px solid rgba(23, 50, 77, 0.14);
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.82);
+        box-shadow: 0 18px 54px rgba(43, 66, 88, 0.14);
+      }
+
+      .binary-board {
+        position: absolute;
+        right: 98px;
+        top: 116px;
+        width: 620px;
+        height: 790px;
+        padding: 34px;
+      }
+
+      .switch-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-top: 34px;
+      }
+
+      .switch {
+        position: relative;
+        display: grid;
+        height: 132px;
+        place-items: center;
+        border-radius: 24px;
+        background: #edf4f7;
+        border: 2px solid #d6e3e8;
+      }
+
+      .switch.on {
+        background: #d9f2e8;
+        border-color: #55b889;
+      }
+
+      .switch.off {
+        background: #f7e7dd;
+        border-color: #e5ad80;
+      }
+
+      .lamp {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #c7d2da;
+      }
+
+      .on .lamp {
+        background: #17a673;
+        box-shadow: 0 0 0 12px rgba(23, 166, 115, 0.15);
+      }
+
+      .off .lamp {
+        background: #d77a35;
+      }
+
+      .switch span {
+        position: absolute;
+        bottom: 18px;
+        font-size: 32px;
+        font-weight: 900;
+      }
+
+      .caption {
+        margin-top: 28px;
+        color: #465d72;
+        font-size: 30px;
+        line-height: 1.45;
+        font-weight: 700;
+      }
+
+      .visual-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 28px;
+        margin-top: 52px;
+      }
+
+      .count-card {
+        min-height: 430px;
+        padding: 32px;
+        text-align: center;
+      }
+
+      .count-card .label {
+        color: #12606a;
+        font-size: 34px;
+        font-weight: 900;
+      }
+
+      .bit-stack {
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+        margin: 40px 0 30px;
+      }
+
+      .mini-bit {
+        display: grid;
+        width: 98px;
+        height: 78px;
+        place-items: center;
+        border-radius: 20px;
+        background: #fff4df;
+        border: 2px solid #efbf66;
+        color: #17324d;
+        font-size: 38px;
+        font-weight: 950;
+      }
+
+      .big-number {
+        color: #d56e20;
+        font-size: 84px;
+        font-weight: 950;
+        line-height: 1;
+      }
+
+      .place-board {
+        position: absolute;
+        left: 104px;
+        right: 104px;
+        bottom: 100px;
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: 34px;
+        align-items: center;
+        padding: 34px;
+      }
+
+      .place-values {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+      }
+
+      .place {
+        min-height: 230px;
+        padding: 22px;
+        border-radius: 24px;
+        background: #ffffff;
+        border: 2px solid #dce7ef;
+        text-align: center;
+      }
+
+      .place .weight {
+        color: #12606a;
+        font-size: 32px;
+        font-weight: 950;
+      }
+
+      .place .digit {
+        margin: 28px auto 18px;
+        display: grid;
+        width: 88px;
+        height: 88px;
+        place-items: center;
+        border-radius: 24px;
+        background: #dff4ee;
+        color: #17324d;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 54px;
+        font-weight: 950;
+      }
+
+      .place .value {
+        color: #d56e20;
+        font-size: 34px;
+        font-weight: 950;
+      }
+
+      .sum {
+        padding: 34px;
+        border-radius: 24px;
+        background: #fff4df;
+        color: #17324d;
+        font-size: 44px;
+        line-height: 1.45;
+        font-weight: 900;
+      }
+
+      .system-strip {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        margin-top: 44px;
+      }
+
+      .system {
+        min-height: 470px;
+        padding: 30px;
+      }
+
+      .system h3 {
+        font-size: 44px;
+        letter-spacing: 0;
+      }
+
+      .digits {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 30px;
+      }
+
+      .digit-chip {
+        display: grid;
+        min-width: 64px;
+        height: 64px;
+        place-items: center;
+        border: 2px solid #dce7ef;
+        border-radius: 18px;
+        background: #fff;
+        font-size: 32px;
+        font-weight: 950;
+      }
+
+      .carry {
+        position: absolute;
+        left: 260px;
+        right: 260px;
+        bottom: 112px;
+        display: grid;
+        grid-template-columns: 1fr 120px 1fr;
+        gap: 28px;
+        align-items: center;
+      }
+
+      .meter {
+        padding: 34px;
+      }
+
+      .meter-title {
+        color: #12606a;
+        font-size: 34px;
+        font-weight: 950;
+      }
+
+      .meter-digits {
+        display: flex;
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      .meter-cell {
+        display: grid;
+        width: 86px;
+        height: 86px;
+        place-items: center;
+        border-radius: 22px;
+        background: #eef5ff;
+        border: 2px solid #cddcf4;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 46px;
+        font-weight: 950;
+      }
+
+      .meter-cell.hot {
+        background: #fff4df;
+        border-color: #efbf66;
+        color: #d56e20;
+      }
+
+      .arrow {
+        color: #12606a;
+        font-size: 90px;
+        font-weight: 950;
+        text-align: center;
+      }
+
+      .same-number {
+        position: absolute;
+        left: 160px;
+        right: 160px;
+        top: 360px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 30px;
+        align-items: end;
+      }
+
+      .number-card {
+        min-height: 320px;
+        padding: 34px;
+        text-align: center;
+      }
+
+      .number-card span {
+        color: #12606a;
+        font-size: 32px;
+        font-weight: 950;
+      }
+
+      .number-card b {
+        display: block;
+        margin-top: 28px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: #17324d;
+        font-size: 82px;
+        line-height: 1;
+      }
+
+      .equal-line {
+        position: absolute;
+        left: 340px;
+        right: 340px;
+        top: 715px;
+        height: 12px;
+        border-radius: 999px;
+        background: #17a673;
+      }
+
+      .takeaway {
+        position: absolute;
+        left: 220px;
+        right: 220px;
+        bottom: 88px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 104px;
+        padding: 20px 34px;
+        border: 3px solid rgba(23, 166, 115, 0.35);
+        border-radius: 28px;
+        background: #e4f5f2;
+        color: #17324d;
+        font-size: 36px;
+        font-weight: 950;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="38"
+      data-width="1920"
+      data-height="1080"
+    >
+      <section id="scene-title" class="clip" data-start="0" data-duration="7" data-track-index="1">
+        <div class="safe">
+          <div class="eyebrow">基本情報技術者 / 基礎理論</div>
+          <h1>N進数は数え方のルール</h1>
+          <p class="lead">まずは文字よりも、スイッチと桁の動きでイメージします。</p>
+        </div>
+        <div class="binary-board board">
+          <div class="tag">0 と 1 だけでも表せる</div>
+          <div class="switch-grid" aria-hidden="true">
+            <div class="switch on"><div class="lamp"></div><span>1</span></div>
+            <div class="switch off"><div class="lamp"></div><span>0</span></div>
+            <div class="switch on"><div class="lamp"></div><span>1</span></div>
+            <div class="switch on"><div class="lamp"></div><span>1</span></div>
+            <div class="switch off"><div class="lamp"></div><span>0</span></div>
+            <div class="switch on"><div class="lamp"></div><span>1</span></div>
+            <div class="switch off"><div class="lamp"></div><span>0</span></div>
+            <div class="switch off"><div class="lamp"></div><span>0</span></div>
+          </div>
+          <p class="caption">1つのスイッチが 1ビット。並べるほど、表せる状態が増えます。</p>
+        </div>
+      </section>
+
+      <section id="scene-growth" class="clip" data-start="7" data-duration="8" data-track-index="2">
+        <div class="safe">
+          <span class="tag">ビット数と表現数</span>
+          <h2>スイッチが1つ増えるたび、状態は2倍</h2>
+          <div class="visual-row">
+            <div class="count-card board">
+              <div class="label">1ビット</div>
+              <div class="bit-stack"><div class="mini-bit">0</div><div class="mini-bit">1</div></div>
+              <div class="big-number">2通り</div>
+            </div>
+            <div class="count-card board">
+              <div class="label">2ビット</div>
+              <div class="bit-stack"><div class="mini-bit">00</div><div class="mini-bit">01</div><div class="mini-bit">10</div><div class="mini-bit">11</div></div>
+              <div class="big-number">4通り</div>
+            </div>
+            <div class="count-card board">
+              <div class="label">3ビット</div>
+              <div class="bit-stack"><div class="mini-bit">000</div><div class="mini-bit">001</div><div class="mini-bit">010</div><div class="mini-bit">…</div></div>
+              <div class="big-number">8通り</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="scene-place" class="clip" data-start="15" data-duration="9" data-track-index="3">
+        <div class="safe">
+          <span class="tag">2進数 1011 の見方</span>
+          <h2>右から 1、2、4、8… と重みが変わる</h2>
+        </div>
+        <div class="place-board board">
+          <div class="place-values">
+            <div class="place"><div class="weight">8の位</div><div class="digit">1</div><div class="value">8</div></div>
+            <div class="place"><div class="weight">4の位</div><div class="digit">0</div><div class="value">0</div></div>
+            <div class="place"><div class="weight">2の位</div><div class="digit">1</div><div class="value">2</div></div>
+            <div class="place"><div class="weight">1の位</div><div class="digit">1</div><div class="value">1</div></div>
+          </div>
+          <div class="sum">1が立っている位だけ足す<br />8 + 2 + 1 = 11</div>
+        </div>
+      </section>
+
+      <section id="scene-systems" class="clip" data-start="24" data-duration="7" data-track-index="4">
+        <div class="safe">
+          <span class="tag">N進数のルール</span>
+          <h2>N種類の記号を使い切ったら、次の桁へ進む</h2>
+          <div class="system-strip">
+            <div class="system board">
+              <h3>2進数</h3>
+              <div class="digits"><span class="digit-chip">0</span><span class="digit-chip">1</span></div>
+              <p class="caption">2種類で繰り上がる</p>
+            </div>
+            <div class="system board">
+              <h3>10進数</h3>
+              <div class="digits"><span class="digit-chip">0</span><span class="digit-chip">1</span><span class="digit-chip">2</span><span class="digit-chip">…</span><span class="digit-chip">9</span></div>
+              <p class="caption">10種類で繰り上がる</p>
+            </div>
+            <div class="system board">
+              <h3>16進数</h3>
+              <div class="digits"><span class="digit-chip">0</span><span class="digit-chip">1</span><span class="digit-chip">…</span><span class="digit-chip">9</span><span class="digit-chip">A</span><span class="digit-chip">…</span><span class="digit-chip">F</span></div>
+              <p class="caption">16種類で繰り上がる</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="scene-carry" class="clip" data-start="31" data-duration="7" data-track-index="5">
+        <div class="safe">
+          <span class="tag">結論</span>
+          <h2>表記が違っても、表している量は同じ</h2>
+        </div>
+        <div class="same-number">
+          <div class="number-card board"><span>10進数</span><b>17</b></div>
+          <div class="number-card board"><span>2進数</span><b>10001</b></div>
+          <div class="number-card board"><span>16進数</span><b>11</b></div>
+        </div>
+        <div class="equal-line"></div>
+        <div class="takeaway">次は「基数変換」で、表記を行き来する手順を練習します。</div>
+      </section>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.set(".clip", { opacity: 0 });
+      const addFrom = (selector, vars, at) => {
+        if (document.querySelector(selector)) {
+          tl.from(selector, vars, at);
+        }
+      };
+
+      for (const scene of ["#scene-title", "#scene-growth", "#scene-place", "#scene-systems", "#scene-carry"]) {
+        const start = Number(document.querySelector(scene).dataset.start);
+        const duration = Number(document.querySelector(scene).dataset.duration);
+        if (start === 0) {
+          tl.set(scene, { opacity: 1 }, 0);
+        } else {
+          tl.to(scene, { opacity: 1, duration: 0.4, ease: "power2.out" }, start);
+        }
+        if (start > 0) {
+          addFrom(`${scene} h1, ${scene} h2`, { y: 34, opacity: 0, duration: 0.72, ease: "power3.out" }, start + 0.18);
+          addFrom(`${scene} .eyebrow, ${scene} .tag, ${scene} .lead`, { y: 22, opacity: 0, duration: 0.62, stagger: 0.08, ease: "power3.out" }, start + 0.34);
+          addFrom(`${scene} .board`, { y: 34, opacity: 0, duration: 0.68, stagger: 0.09, ease: "power3.out" }, start + 0.68);
+        }
+        if (start > 0) {
+          addFrom(`${scene} .switch, ${scene} .mini-bit, ${scene} .place, ${scene} .digit-chip, ${scene} .number-card`, { scale: 0.9, opacity: 0, duration: 0.42, stagger: 0.045, ease: "back.out(1.5)" }, start + 1.08);
+        }
+        addFrom(`${scene} .big-number, ${scene} .sum, ${scene} .equal-line, ${scene} .takeaway`, { y: 18, opacity: 0, duration: 0.5, stagger: 0.08, ease: "power3.out" }, start + 1.5);
+        tl.to(scene, { opacity: 0, duration: 0.35, ease: "power2.in" }, start + duration - 0.35);
+      }
+
+      tl.to(".lamp", { scale: 1.12, duration: 0.5, yoyo: true, repeat: 10, ease: "sine.inOut" }, 1.1);
+      tl.to("#scene-place .place .digit", { y: -8, duration: 0.42, yoyo: true, repeat: 5, stagger: 0.1, ease: "sine.inOut" }, 17.2);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

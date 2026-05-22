@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+
+<html class="light" lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>shikaq Editor - 2進数 / 基数変換</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+                label: "#1C1C1E",
+                secondaryLabel: "#3C3C43",
+                tertiaryLabel: "#3C3C4399",
+                quaternaryLabel: "#3C3C434D",
+                systemBackground: "#FFFFFF",
+                secondarySystemBackground: "#F2F2F7",
+                systemFill: "#7878801F",
+                accent: "#007AFF"
+            },
+            borderRadius: {
+                "DEFAULT": "0.5rem",
+                "lg": "1rem",
+                "xl": "1.5rem",
+                "full": "9999px"
+            },
+            fontFamily: {
+                headline: ["Inter", "Hiragino Sans", "sans-serif"],
+                display: ["Inter", "Hiragino Sans", "sans-serif"],
+                body: ["Inter", "Hiragino Sans", "sans-serif"],
+                label: ["Inter", "Hiragino Sans", "sans-serif"],
+                mono: ["JetBrains Mono", "monospace"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+            font-size: 20px;
+        }
+        .thin-border { border-width: 0.5px; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Syntax Highlighting Mockup */
+        .token-heading { color: #007AFF; font-weight: 600; }
+        .token-bullet { color: #FF9F0A; }
+        .token-table { color: #32ADE6; }
+        .token-bold { font-weight: 600; color: #1C1C1E; }
+    </style>
+</head>
+<body class="bg-secondarySystemBackground font-body text-label overflow-hidden h-screen flex flex-col">
+<!-- TopNavBar (Shared Component Logic) -->
+<header class="bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-[#3C3C43]/10 dark:border-[#545458]/10 docked full-width top-0 sticky z-50 flex justify-between items-center w-full px-6 h-14">
+<div class="flex items-center gap-4">
+<div class="flex flex-col">
+<nav class="flex items-center gap-1.5 text-[11px] text-[#3C3C43]/60 dark:text-[#EBEBF5]/60 font-medium tracking-tight">
+<span>Admin</span>
+<span class="material-symbols-outlined !text-[10px]">chevron_right</span>
+<span>基本情報技術者</span>
+<span class="material-symbols-outlined !text-[10px]">chevron_right</span>
+<span>数の表現</span>
+</nav>
+<div class="flex items-center gap-2">
+<h1 class="text-[17px] font-semibold tracking-tight text-label dark:text-white">2進数 / 基数変換</h1>
+<span class="bg-systemFill text-[10px] px-1.5 py-0.5 rounded-sm font-semibold tracking-wide text-secondaryLabel uppercase">Draft</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="hidden md:flex items-center gap-6 mr-6">
+<a class="text-[#3C3C43]/60 dark:text-[#EBEBF5]/60 hover:text-label transition-colors font-semibold text-[14px]" href="#">Drafts</a>
+<a class="text-[#3C3C43]/60 dark:text-[#EBEBF5]/60 hover:text-label transition-colors font-semibold text-[14px]" href="#">Modules</a>
+<a class="text-[#3C3C43]/60 dark:text-[#EBEBF5]/60 hover:text-label transition-colors font-semibold text-[14px]" href="#">Analytics</a>
+</div>
+<div class="flex items-center gap-2 border-r border-[#3C3C43]/10 pr-3 mr-1">
+<button class="px-3 py-1.5 text-[13px] font-medium text-accent hover:bg-[#F2F2F7]/50 rounded-lg transition-colors flex items-center gap-1.5">
+<span class="material-symbols-outlined">auto_awesome</span>
+                    AIで本文生成
+                </button>
+<button class="px-3 py-1.5 text-[13px] font-medium text-secondaryLabel hover:bg-[#F2F2F7]/50 rounded-lg transition-colors flex items-center gap-1.5">
+<span class="material-symbols-outlined">visibility</span>
+                    プレビュー
+                </button>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-[11px] text-tertiaryLabel">保存済み 14:42</span>
+<button class="bg-[#007AFF] text-white px-4 py-1.5 rounded-full text-[13px] font-semibold hover:opacity-90 active:scale-[0.98] transition-all flex items-center gap-1.5">
+<span class="material-symbols-outlined !text-[18px]">movie</span>
+                    動画レンダー
+                </button>
+<div class="flex gap-1">
+<button class="p-2 text-secondaryLabel hover:bg-[#F2F2F7]/50 rounded-lg">
+<span class="material-symbols-outlined">share</span>
+</button>
+<button class="p-2 text-secondaryLabel hover:bg-[#F2F2F7]/50 rounded-lg">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar (Contextual Mapping: Lesson Editor Navigation) -->
+<div class="flex flex-1 overflow-hidden">
+<aside class="bg-[#F2F2F7] dark:bg-[#1C1C1E] border-r border-[#3C3C43]/10 dark:border-[#545458]/10 docked left-0 h-full w-64 flex flex-col h-full p-4 gap-2">
+<div class="px-2 py-4 mb-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center text-accent">
+<span class="material-symbols-outlined">school</span>
+</div>
+<div>
+<div class="font-headline text-[17px] font-medium">Lesson 01</div>
+<div class="font-body text-[13px] leading-tight text-secondaryLabel">Introduction to IT</div>
+</div>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-[#3C3C43]/60 dark:text-[#EBEBF5]/60 hover:bg-[#E5E5EA] dark:hover:bg-[#2C2C2E] rounded-lg transition-all font-body text-[13px] leading-tight" href="#">
+<span class="material-symbols-outlined">movie</span>
+                    動画
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 bg-white dark:bg-[#2C2C2E] text-label dark:text-white rounded-lg shadow-sm font-medium font-body text-[13px] leading-tight" href="#">
+<span class="material-symbols-outlined text-accent" data-weight="fill">description</span>
+                    教材本文
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#3C3C43]/60 dark:text-[#EBEBF5]/60 hover:bg-[#E5E5EA] dark:hover:bg-[#2C2C2E] rounded-lg transition-all font-body text-[13px] leading-tight" href="#">
+<span class="material-symbols-outlined">quiz</span>
+                    確認問題
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 text-[#3C3C43]/60 dark:text-[#EBEBF5]/60 hover:bg-[#E5E5EA] dark:hover:bg-[#2C2C2E] rounded-lg transition-all font-body text-[13px] leading-tight" href="#">
+<span class="material-symbols-outlined">rocket_launch</span>
+                    公開
+                </a>
+</nav>
+<div class="mt-auto pt-4">
+<button class="w-full flex items-center justify-center gap-2 py-2.5 bg-accent text-white rounded-lg text-[13px] font-semibold active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined !text-[18px]">add_circle</span>
+                    New Scene
+                </button>
+</div>
+</aside>
+<!-- Main Workspace -->
+<main class="flex-1 flex flex-col bg-white overflow-hidden">
+<!-- Secondary Navigation / Tabs Row -->
+<div class="flex items-center px-8 h-10 bg-[#F2F2F7]/50 border-b border-[#3C3C43]/10">
+<div class="flex gap-8 h-full">
+<button class="h-full px-1 text-[13px] font-medium text-tertiaryLabel border-b-2 border-transparent hover:text-secondaryLabel">動画設定</button>
+<button class="h-full px-1 text-[13px] font-semibold text-accent border-b-2 border-accent">教材本文</button>
+<button class="h-full px-1 text-[13px] font-medium text-tertiaryLabel border-b-2 border-transparent hover:text-secondaryLabel">確認問題 (12)</button>
+<button class="h-full px-1 text-[13px] font-medium text-tertiaryLabel border-b-2 border-transparent hover:text-secondaryLabel">公開設定</button>
+</div>
+</div>
+<!-- Content Canvas (Split View) -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Left: Markdown Editor -->
+<section class="w-1/2 flex flex-col bg-[#F9F9F9] border-r border-[#3C3C43]/10">
+<div class="flex-1 p-6 font-mono text-[14px] leading-relaxed text-secondaryLabel overflow-y-auto hide-scrollbar selection:bg-accent/10">
+<div class="flex gap-4">
+<div class="text-quaternaryLabel text-right select-none pr-2 border-r border-[#3C3C43]/5 w-8">
+                                01<br/>02<br/>03<br/>04<br/>05<br/>06<br/>07<br/>08<br/>09<br/>10<br/>11<br/>12<br/>13<br/>14<br/>15<br/>16
+                            </div>
+<div class="flex-1">
+<span class="token-heading"># 2進数とは</span><br/>
+                                コンピュータの中では、すべてが 0 と 1 で構成されています...<br/>
+<br/>
+<span class="token-heading">## 基数の考え方</span><br/>
+<span class="token-bullet">-</span> 10進数: 使える数字は 0〜9 の <span class="token-bold">**10種類**</span><br/>
+<span class="token-bullet">-</span> 2進数: 0 と 1 の <span class="token-bold">**2種類**</span><br/>
+<span class="token-bullet">-</span> 16進数: 0〜9 と A〜F の <span class="token-bold">**16種類**</span><br/>
+<br/>
+<span class="token-heading">## 桁の重み</span><br/>
+<span class="token-table">| 桁 | 2進 | 重み |</span><br/>
+<span class="token-table">|---|---|---|</span><br/>
+<span class="token-table">| 2³ | 1 | 8 |</span><br/>
+<span class="token-table">| 2² | 0 | 4 |</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Right: Preview -->
+<section class="w-1/2 flex flex-col bg-white overflow-y-auto selection:bg-accent/20">
+<div class="max-w-[640px] mx-auto w-full py-12 px-10">
+<article class="prose prose-slate max-w-none">
+<h1 class="text-[32px] font-bold tracking-tight text-label mb-6 border-b border-[#3C3C43]/10 pb-4">2進数とは</h1>
+<p class="text-[17px] leading-[1.6] text-secondaryLabel mb-8">
+                                コンピュータの中では、すべてが 0 と 1 で表現されます。私たちの生活に馴染み深い「10進数」とは異なる仕組みを理解しましょう。
+                            </p>
+<h2 class="text-[22px] font-semibold text-label mb-4 mt-10">基数の考え方</h2>
+<ul class="space-y-3 mb-8">
+<li class="flex items-start gap-3 text-[17px] text-secondaryLabel">
+<span class="text-accent mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
+<span>10進数: 使える数字は 0〜9 の <strong class="text-label font-semibold underline decoration-accent/30 underline-offset-4">10種類</strong></span>
+</li>
+<li class="flex items-start gap-3 text-[17px] text-secondaryLabel">
+<span class="text-accent mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
+<span>2進数: 0 と 1 の <strong class="text-label font-semibold underline decoration-accent/30 underline-offset-4">2種類</strong></span>
+</li>
+<li class="flex items-start gap-3 text-[17px] text-secondaryLabel">
+<span class="text-accent mt-1.5 w-1.5 h-1.5 rounded-full bg-accent shrink-0"></span>
+<span>16進数: 0〜9 と A〜F の <strong class="text-label font-semibold underline decoration-accent/30 underline-offset-4">16種類</strong></span>
+</li>
+</ul>
+<h2 class="text-[22px] font-semibold text-label mb-4 mt-10">桁の重み</h2>
+<div class="overflow-hidden rounded-lg border border-[#3C3C43]/10 mb-8">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-secondarySystemBackground">
+<th class="px-4 py-3 text-[13px] font-semibold text-secondaryLabel border-b border-[#3C3C43]/10">桁</th>
+<th class="px-4 py-3 text-[13px] font-semibold text-secondaryLabel border-b border-[#3C3C43]/10">2進</th>
+<th class="px-4 py-3 text-[13px] font-semibold text-secondaryLabel border-b border-[#3C3C43]/10">重み</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#3C3C43]/5">
+<tr>
+<td class="px-4 py-3 text-[15px] font-medium text-label">2³</td>
+<td class="px-4 py-3 text-[15px] text-secondaryLabel">1</td>
+<td class="px-4 py-3 text-[15px] text-secondaryLabel">8</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-[15px] font-medium text-label">2²</td>
+<td class="px-4 py-3 text-[15px] text-secondaryLabel">0</td>
+<td class="px-4 py-3 text-[15px] text-secondaryLabel">4</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-12">
+<img class="w-full rounded-xl thin-border aspect-video object-cover" data-alt="A clean, cinematic shot of a glowing motherboard with minimalist blue and white circuit patterns, representing computer architecture and binary systems. The lighting is soft and focused, creating a premium high-tech atmosphere with a clear, airy background. The overall aesthetic matches a modern, light-mode Japanese educational application interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBn7cs1Ejp-24IOf1zA2u9zJLwHmha_L7aJx_NzuT8CE7f61i8sAv1G99ymIL6SjnZ39N_G0mdgWHn7AWN2Gpgq7YB0hnab7c5LeiwBJ_AUT4VjagoHDGb7wjKZKuFsHho9st0sAbncU42oExolUt6BP-r-UF2tQAQPj-qYZuoDi6OoxJeSmNxenvFFND6NIdL1jsgLiLg1nGxL_OTGW1xfAf2tfhH2a8-ROrYjZiLYXbANAV2NRNWK1KaEkKw_IMmq-pfM89QkgUAi"/>
+<p class="text-[12px] text-tertiaryLabel mt-2 text-center">図 1-1：コンピュータ内部の論理回路のイメージ</p>
+</div>
+</article>
+</div>
+</section>
+</div>
+<!-- Bottom Status Bar -->
+<footer class="h-10 bg-white border-t border-[#3C3C43]/10 flex items-center justify-between px-6">
+<div class="flex items-center gap-6 text-[11px] text-secondaryLabel font-medium">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined !text-[14px]">text_format</span>
+<span>428 文字</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined !text-[14px]">segment</span>
+<span>16 行</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined !text-[14px]">schedule</span>
+<span>3分で読める</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-32 bg-systemFill h-1 rounded-full overflow-hidden">
+<div class="bg-accent h-full w-[65%]"></div>
+</div>
+<span class="text-[11px] font-semibold text-accent">完成度 65%</span>
+</div>
+</footer>
+</main>
+</div>
+</body></html>

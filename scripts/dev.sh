@@ -97,7 +97,7 @@ fi
 
 # ────────── 4. Expo Web ──────────
 echo "[dev] starting expo web        → log: $EXPO_LOG"
-(cd "$ROOT/que-app" && npm run web >"$EXPO_LOG" 2>&1) &
+(cd "$ROOT/qu-app" && npm run web >"$EXPO_LOG" 2>&1) &
 pids+=($!)
 
 # ────────── 5. Cloudflare Tunnel (Supabase API を HTTPS 公開) ──────────

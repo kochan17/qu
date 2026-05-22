@@ -1,0 +1,21 @@
+{
+  "name": "@que/renderer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx server.ts",
+    "build": "tsc",
+    "render": "tsx render.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.0.2",
+    "@supabase/supabase-js": "^2.49.4",
+    "hono": "^4.7.10",
+    "tsx": "^4.19.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "typescript": "^5.8.3"
+  }
+}

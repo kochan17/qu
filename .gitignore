@@ -71,3 +71,10 @@ android/
 
 # dev.sh が吐く foreground service ログ
 .dev/
+
+# Playwright E2E の出力
+test-results/
+playwright-report/
+
+# 動画レンダリング成果物（ソースは Markdown + hyperframes.json）
+*.mp4
