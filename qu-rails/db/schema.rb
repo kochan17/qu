@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_22_030713) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_22_033928) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -198,6 +198,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_030713) do
     t.index ["course_id"], name: "index_sections_on_course_id"
   end
 
+  create_table "sessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "ip_address"
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
   create_table "subscriptions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "current_period_end"
@@ -220,22 +229,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_030713) do
     t.datetime "created_at", null: false
     t.integer "current_streak", default: 0, null: false
     t.string "display_name"
-    t.string "email", default: "", null: false
-    t.string "encrypted_password", default: "", null: false
+    t.string "email_address", null: false
     t.boolean "evening_notification_enabled", default: false, null: false
     t.date "last_active_date"
     t.integer "longest_streak", default: 0, null: false
     t.boolean "morning_notification_enabled", default: true, null: false
+    t.string "password_digest", null: false
     t.date "paused_until"
     t.string "preferred_certification"
-    t.datetime "remember_created_at"
-    t.datetime "reset_password_sent_at"
-    t.string "reset_password_token"
     t.string "role", default: "user", null: false
     t.integer "streak_freeze_count", default: 0, null: false
     t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["email_address"], name: "index_users_on_email_address", unique: true
     t.check_constraint "preferred_certification IS NULL OR (preferred_certification::text = ANY (ARRAY['ip'::character varying, 'fe'::character varying, 'genai'::character varying, 'gken'::character varying]::text[]))", name: "chk_users_preferred_certification"
     t.check_constraint "role::text = ANY (ARRAY['user'::character varying, 'admin'::character varying]::text[])", name: "chk_users_role"
   end
@@ -256,5 +261,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_030713) do
   add_foreign_key "section_masteries", "sections"
   add_foreign_key "section_masteries", "users"
   add_foreign_key "sections", "courses"
+  add_foreign_key "sessions", "users"
   add_foreign_key "subscriptions", "users"
 end

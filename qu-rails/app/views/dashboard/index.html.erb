@@ -1,0 +1,147 @@
+<%# Today ダッシュボード — Apple News+ × Fitness の引き算デザイン %>
+<%# Daily Ring と今日のキューのみ。煽り・断言形は使わない %>
+
+<%
+  activity   = @daily_activity
+  total_done = activity.recall_count + activity.learn_count
+  total_goal = activity.recall_goal  + activity.learn_goal
+  pct        = total_goal > 0 ? [(total_done.to_f / total_goal * 100).round, 100].min : 0
+
+  # SVG リングの計算
+  radius        = 54
+  circumference = (2 * Math::PI * radius).round(2)
+  dash_offset   = (circumference * (1 - pct / 100.0)).round(2)
+%>
+
+<div class="space-y-10">
+
+  <%# ─── ヘッダー：日付 + 控えめなストリーク ─────────────────────────── %>
+  <div class="flex items-baseline justify-between">
+    <div>
+      <p class="text-sm text-neutral-400"><%= l(Date.current, format: "%Y年%-m月%-d日") %></p>
+      <h1 class="mt-1 text-2xl font-semibold tracking-tight">今日の学習</h1>
+    </div>
+    <%# ストリーク: 継続中は大きく見せない（Phase 1 仕様） %>
+    <% if Current.user.current_streak > 0 %>
+      <div class="text-right">
+        <p class="text-xs text-neutral-400">継続</p>
+        <p class="text-sm font-medium text-neutral-500"><%= Current.user.current_streak %> 日</p>
+      </div>
+    <% end %>
+  </div>
+
+  <%# ─── Daily Ring ────────────────────────────────────────────────── %>
+  <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-start sm:gap-10">
+
+    <%# SVG リング %>
+    <div class="relative flex-shrink-0">
+      <svg width="144" height="144" viewBox="0 0 144 144" class="-rotate-90" aria-hidden="true">
+        <%# 背景トラック %>
+        <circle
+          cx="72" cy="72" r="<%= radius %>"
+          fill="none"
+          stroke-width="12"
+          class="stroke-neutral-100"
+        />
+        <%# 進捗アーク（recall: indigo / learn: sky が混在するが Web では単色が安全） %>
+        <circle
+          cx="72" cy="72" r="<%= radius %>"
+          fill="none"
+          stroke-width="12"
+          stroke-linecap="round"
+          stroke-dasharray="<%= circumference %>"
+          stroke-dashoffset="<%= dash_offset %>"
+          class="stroke-indigo-500 transition-all duration-700 ease-out"
+        />
+      </svg>
+      <%# 中央の数字 %>
+      <div class="absolute inset-0 flex flex-col items-center justify-center">
+        <span class="text-4xl font-semibold tabular-nums leading-none text-neutral-900"><%= total_done %></span>
+        <span class="mt-0.5 text-xs text-neutral-400">/ <%= total_goal %> 問</span>
+      </div>
+    </div>
+
+    <%# 内訳 %>
+    <div class="w-full space-y-4">
+      <p class="text-sm font-medium text-neutral-700">今日の進捗</p>
+
+      <%# Recall セグメント %>
+      <div class="space-y-1">
+        <div class="flex justify-between text-xs text-neutral-500">
+          <span>復習</span>
+          <span><%= activity.recall_count %> / <%= activity.recall_goal %></span>
+        </div>
+        <div class="h-1.5 overflow-hidden rounded-full bg-neutral-100">
+          <div class="h-full rounded-full bg-indigo-400 transition-all duration-700"
+               style="width: <%= activity.recall_goal > 0 ? [(activity.recall_count.to_f / activity.recall_goal * 100).round, 100].min : 0 %>%"></div>
+        </div>
+      </div>
+
+      <%# Learn セグメント %>
+      <div class="space-y-1">
+        <div class="flex justify-between text-xs text-neutral-500">
+          <span>新規学習</span>
+          <span><%= activity.learn_count %> / <%= activity.learn_goal %></span>
+        </div>
+        <div class="h-1.5 overflow-hidden rounded-full bg-neutral-100">
+          <div class="h-full rounded-full bg-sky-400 transition-all duration-700"
+               style="width: <%= activity.learn_goal > 0 ? [(activity.learn_count.to_f / activity.learn_goal * 100).round, 100].min : 0 %>%"></div>
+        </div>
+      </div>
+
+      <%# 完了メッセージ or 応援コピー %>
+      <% if activity.completed? %>
+        <p class="text-sm text-indigo-600">今日の目標に届きました。</p>
+      <% elsif total_done > 0 %>
+        <p class="text-sm text-neutral-400">もう少しで今日の目標に届きます。</p>
+      <% else %>
+        <p class="text-sm text-neutral-400">今日の <%= total_goal %> 問が届いています。</p>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ─── 今日のキュー ──────────────────────────────────────────────── %>
+  <section>
+    <h2 class="mb-4 text-base font-semibold">今日のキュー</h2>
+
+    <% if @today_questions.any? %>
+      <ul class="divide-y divide-neutral-100 rounded-2xl border border-neutral-100 bg-white">
+        <% @today_questions.each_with_index do |question, idx| %>
+          <li class="px-5 py-4">
+            <div class="flex items-start gap-3">
+              <span class="mt-0.5 min-w-[1.5rem] text-right text-xs tabular-nums text-neutral-300"><%= idx + 1 %></span>
+              <div class="min-w-0 flex-1">
+                <p class="text-sm leading-relaxed text-neutral-700"><%= question.question_text %></p>
+                <% if question.choices.present? %>
+                  <ul class="mt-2 space-y-1">
+                    <% question.choices.each do |choice| %>
+                      <li class="flex items-center gap-2 text-xs text-neutral-400">
+                        <span class="font-medium text-neutral-300"><%= choice["id"]&.upcase %>.</span>
+                        <span><%= choice["text"] %></span>
+                      </li>
+                    <% end %>
+                  </ul>
+                <% end %>
+              </div>
+              <%# Practice 画面は B3 で実装 — プレースホルダリンク %>
+              <span class="flex-shrink-0 rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-600 cursor-default">
+                練習
+              </span>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <div class="rounded-2xl border border-neutral-100 bg-white px-6 py-10 text-center">
+        <p class="text-sm text-neutral-400">
+          <% if Current.user.preferred_certification.blank? %>
+            学習する資格を設定すると、今日のキューが表示されます。
+          <% else %>
+            今日のキューはまだ準備中です。
+          <% end %>
+        </p>
+      </div>
+    <% end %>
+  </section>
+
+</div>
