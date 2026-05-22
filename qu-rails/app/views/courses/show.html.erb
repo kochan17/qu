@@ -1,0 +1,72 @@
+<%# コース詳細 — Apple Podcasts 風、セクション + エピソードカード一覧。 %>
+<% content_for :title, @course.title %>
+
+<%
+  progress_pct = @total_lessons.positive? ?
+    [ (@completed_lessons.to_f / @total_lessons * 100).round, 100 ].min : 0
+%>
+
+<div class="space-y-8">
+
+  <%# ── 戻るリンク ──────────────────────────────────────────── %>
+  <%= link_to courses_path,
+        class: "inline-flex items-center gap-1 text-sm text-tint transition-colors hover:text-tint-strong" do %>
+    <%= icon("arrow_back_ios", css: "text-base") %>
+    <span>コース一覧</span>
+  <% end %>
+
+  <%# ── コースヘッダ ────────────────────────────────────────── %>
+  <header class="space-y-4">
+    <h1 class="text-2xl font-semibold tracking-tight text-content"><%= @course.title %></h1>
+
+    <% if @course.description.present? %>
+      <p class="text-sm leading-relaxed text-content-muted"><%= @course.description %></p>
+    <% end %>
+
+    <%# コース全体の進捗バー %>
+    <% if @total_lessons.positive? %>
+      <div class="space-y-1.5">
+        <div class="flex items-baseline justify-between">
+          <p class="text-xs text-content-faint">全体の進捗</p>
+          <p class="text-xs tabular-nums text-content-muted">
+            <%= @completed_lessons %> / <%= @total_lessons %> レッスン
+          </p>
+        </div>
+        <div class="h-1.5 overflow-hidden rounded-full bg-surface-sunken">
+          <div class="h-full rounded-full bg-tint transition-all duration-700"
+               style="width: <%= progress_pct %>%"></div>
+        </div>
+      </div>
+    <% end %>
+  </header>
+
+  <%# ── セクション一覧 ──────────────────────────────────────── %>
+  <% if @sections.empty? %>
+    <div class="rounded-2xl border border-border-subtle bg-surface-elevated px-6 py-12 text-center">
+      <%= icon("auto_stories", css: "text-4xl text-content-faint") %>
+      <p class="mt-3 text-sm text-content-muted">セクションを準備中です。</p>
+    </div>
+  <% else %>
+    <div class="space-y-8">
+      <% @sections.each do |section| %>
+        <section class="space-y-3">
+          <%# セクションタイトル %>
+          <h2 class="text-base font-semibold text-content"><%= section.title %></h2>
+
+          <%# レッスン一覧 %>
+          <% published_lessons = section.lessons.published.ordered %>
+          <% if published_lessons.empty? %>
+            <p class="text-sm text-content-faint px-1">レッスンを準備中です。</p>
+          <% else %>
+            <div class="divide-y divide-border-subtle rounded-2xl border border-border-subtle bg-surface-elevated overflow-hidden">
+              <% published_lessons.each do |lesson| %>
+                <%= render "courses/lesson_row", lesson: lesson, completed: @completed_lesson_ids.include?(lesson.id) %>
+              <% end %>
+            </div>
+          <% end %>
+        </section>
+      <% end %>
+    </div>
+  <% end %>
+
+</div>

@@ -1,145 +1,118 @@
-<%# Today ダッシュボード — Apple News+ × Fitness の引き算デザイン %>
-<%# Daily Ring と今日のキューのみ。煽り・断言形は使わない %>
+<%# Today ダッシュボード — Apple News+ × Fitness の引き算デザイン。
+    Daily Ring と今日のキューのみ。煽り・断言形は使わない。 %>
+<% content_for :title, "Today" %>
 
 <%
-  activity   = @daily_activity
-  total_done = activity.recall_count + activity.learn_count
-  total_goal = activity.recall_goal  + activity.learn_goal
-  pct        = total_goal > 0 ? [(total_done.to_f / total_goal * 100).round, 100].min : 0
-
-  # SVG リングの計算
-  radius        = 54
-  circumference = (2 * Math::PI * radius).round(2)
-  dash_offset   = (circumference * (1 - pct / 100.0)).round(2)
+  recall_pct = @activity.recall_goal.positive? ?
+    [ (@activity.recall_count.to_f / @activity.recall_goal * 100).round, 100 ].min : 0
+  learn_pct = @activity.learn_goal.positive? ?
+    [ (@activity.learn_count.to_f / @activity.learn_goal * 100).round, 100 ].min : 0
+  queue_total = @due_count + @new_count
 %>
 
-<div class="space-y-10">
+<div class="mx-auto max-w-2xl space-y-8">
 
-  <%# ─── ヘッダー：日付 + 控えめなストリーク ─────────────────────────── %>
-  <div class="flex items-baseline justify-between">
+  <%# ── 日付 + 控えめなストリーク ───────────────────────────── %>
+  <header class="flex items-baseline justify-between">
     <div>
-      <p class="text-sm text-neutral-400"><%= l(Date.current, format: "%Y年%-m月%-d日") %></p>
-      <h1 class="mt-1 text-2xl font-semibold tracking-tight">今日の学習</h1>
+      <p class="text-sm text-content-faint"><%= japanese_date(Date.current) %></p>
+      <h1 class="mt-1 text-2xl font-semibold tracking-tight text-content">今日の学習</h1>
     </div>
-    <%# ストリーク: 継続中は大きく見せない（Phase 1 仕様） %>
-    <% if Current.user.current_streak > 0 %>
+    <%# 継続中はストリークを大きく見せない（Phase 1 仕様 / Calm Mode 中は隠す）%>
+    <% if Current.user.current_streak.positive? && !Current.user.calm_mode_active? %>
       <div class="text-right">
-        <p class="text-xs text-neutral-400">継続</p>
-        <p class="text-sm font-medium text-neutral-500"><%= Current.user.current_streak %> 日</p>
+        <p class="text-xs text-content-faint">継続</p>
+        <p class="text-sm font-medium text-content-muted"><%= Current.user.current_streak %> 日</p>
       </div>
     <% end %>
-  </div>
+  </header>
 
-  <%# ─── Daily Ring ────────────────────────────────────────────────── %>
-  <div class="flex flex-col items-center gap-6 sm:flex-row sm:items-start sm:gap-10">
+  <%# ── Daily Ring ────────────────────────────────────────── %>
+  <section class="rounded-3xl border border-border-subtle bg-surface-elevated p-6 sm:p-8">
+    <div class="flex flex-col items-center gap-7 sm:flex-row sm:gap-9">
+      <%= render "shared/daily_ring", activity: @activity %>
 
-    <%# SVG リング %>
-    <div class="relative flex-shrink-0">
-      <svg width="144" height="144" viewBox="0 0 144 144" class="-rotate-90" aria-hidden="true">
-        <%# 背景トラック %>
-        <circle
-          cx="72" cy="72" r="<%= radius %>"
-          fill="none"
-          stroke-width="12"
-          class="stroke-neutral-100"
-        />
-        <%# 進捗アーク（recall: indigo / learn: sky が混在するが Web では単色が安全） %>
-        <circle
-          cx="72" cy="72" r="<%= radius %>"
-          fill="none"
-          stroke-width="12"
-          stroke-linecap="round"
-          stroke-dasharray="<%= circumference %>"
-          stroke-dashoffset="<%= dash_offset %>"
-          class="stroke-indigo-500 transition-all duration-700 ease-out"
-        />
-      </svg>
-      <%# 中央の数字 %>
-      <div class="absolute inset-0 flex flex-col items-center justify-center">
-        <span class="text-4xl font-semibold tabular-nums leading-none text-neutral-900"><%= total_done %></span>
-        <span class="mt-0.5 text-xs text-neutral-400">/ <%= total_goal %> 問</span>
-      </div>
-    </div>
+      <div class="w-full space-y-4">
+        <p class="text-sm font-medium text-content">今日の進捗</p>
 
-    <%# 内訳 %>
-    <div class="w-full space-y-4">
-      <p class="text-sm font-medium text-neutral-700">今日の進捗</p>
-
-      <%# Recall セグメント %>
-      <div class="space-y-1">
-        <div class="flex justify-between text-xs text-neutral-500">
-          <span>復習</span>
-          <span><%= activity.recall_count %> / <%= activity.recall_goal %></span>
+        <div class="space-y-1.5">
+          <div class="flex justify-between text-xs text-content-muted">
+            <span>復習</span>
+            <span class="tabular-nums"><%= @activity.recall_count %> / <%= @activity.recall_goal %></span>
+          </div>
+          <div class="h-1.5 overflow-hidden rounded-full bg-surface-sunken">
+            <div class="h-full rounded-full bg-tint transition-all duration-700"
+                 style="width: <%= recall_pct %>%"></div>
+          </div>
         </div>
-        <div class="h-1.5 overflow-hidden rounded-full bg-neutral-100">
-          <div class="h-full rounded-full bg-indigo-400 transition-all duration-700"
-               style="width: <%= activity.recall_goal > 0 ? [(activity.recall_count.to_f / activity.recall_goal * 100).round, 100].min : 0 %>%"></div>
+
+        <div class="space-y-1.5">
+          <div class="flex justify-between text-xs text-content-muted">
+            <span>新規学習</span>
+            <span class="tabular-nums"><%= @activity.learn_count %> / <%= @activity.learn_goal %></span>
+          </div>
+          <div class="h-1.5 overflow-hidden rounded-full bg-surface-sunken">
+            <div class="h-full rounded-full bg-tint/60 transition-all duration-700"
+                 style="width: <%= learn_pct %>%"></div>
+          </div>
         </div>
-      </div>
 
-      <%# Learn セグメント %>
-      <div class="space-y-1">
-        <div class="flex justify-between text-xs text-neutral-500">
-          <span>新規学習</span>
-          <span><%= activity.learn_count %> / <%= activity.learn_goal %></span>
-        </div>
-        <div class="h-1.5 overflow-hidden rounded-full bg-neutral-100">
-          <div class="h-full rounded-full bg-sky-400 transition-all duration-700"
-               style="width: <%= activity.learn_goal > 0 ? [(activity.learn_count.to_f / activity.learn_goal * 100).round, 100].min : 0 %>%"></div>
-        </div>
-      </div>
-
-      <%# 完了メッセージ or 応援コピー %>
-      <% if activity.completed? %>
-        <p class="text-sm text-indigo-600">今日の目標に届きました。</p>
-      <% elsif total_done > 0 %>
-        <p class="text-sm text-neutral-400">もう少しで今日の目標に届きます。</p>
-      <% else %>
-        <p class="text-sm text-neutral-400">今日の <%= total_goal %> 問が届いています。</p>
-      <% end %>
-    </div>
-  </div>
-
-  <%# ─── 今日のキュー ──────────────────────────────────────────────── %>
-  <section>
-    <h2 class="mb-4 text-base font-semibold">今日のキュー</h2>
-
-    <% if @today_questions.any? %>
-      <ul class="divide-y divide-neutral-100 rounded-2xl border border-neutral-100 bg-white">
-        <% @today_questions.each_with_index do |question, idx| %>
-          <li class="px-5 py-4">
-            <div class="flex items-start gap-3">
-              <span class="mt-0.5 min-w-[1.5rem] text-right text-xs tabular-nums text-neutral-300"><%= idx + 1 %></span>
-              <div class="min-w-0 flex-1">
-                <p class="text-sm leading-relaxed text-neutral-700"><%= question.question_text %></p>
-                <% if question.choices.present? %>
-                  <ul class="mt-2 space-y-1">
-                    <% question.choices.each do |choice| %>
-                      <li class="flex items-center gap-2 text-xs text-neutral-400">
-                        <span class="font-medium text-neutral-300"><%= choice["id"]&.upcase %>.</span>
-                        <span><%= choice["text"] %></span>
-                      </li>
-                    <% end %>
-                  </ul>
-                <% end %>
-              </div>
-              <%# Practice 画面は B3 で実装 — プレースホルダリンク %>
-              <span class="flex-shrink-0 rounded-lg bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-600 cursor-default">
-                練習
-              </span>
-            </div>
-          </li>
-        <% end %>
-      </ul>
-    <% else %>
-      <div class="rounded-2xl border border-neutral-100 bg-white px-6 py-10 text-center">
-        <p class="text-sm text-neutral-400">
-          <% if Current.user.preferred_certification.blank? %>
-            学習する資格を設定すると、今日のキューが表示されます。
+        <p class="text-sm <%= @activity.core_completed? ? "text-tint" : "text-content-faint" %>">
+          <% if @activity.core_completed? %>
+            今日の目標に届きました。
+          <% elsif @activity.core_done.positive? %>
+            あと <%= @activity.core_goal - @activity.core_done %> 問で今日の目標です。
           <% else %>
-            今日のキューはまだ準備中です。
+            今日の <%= @activity.core_goal %> 問を始めましょう。
           <% end %>
         </p>
+      </div>
+    </div>
+  </section>
+
+  <%# ── 今日のキュー / CTA ───────────────────────────────────── %>
+  <section>
+    <% if @certification.nil? %>
+      <div class="rounded-2xl border border-border-subtle bg-surface-elevated px-6 py-10 text-center">
+        <p class="text-sm text-content-muted">学習する資格を設定すると、今日のキューが届きます。</p>
+        <%= link_to "資格を選ぶ", settings_path,
+              class: "mt-4 inline-block rounded-xl bg-tint px-5 py-2.5 text-sm font-medium text-on-tint" %>
+      </div>
+
+    <% elsif @activity.core_completed? %>
+      <div class="rounded-2xl border border-border-subtle bg-surface-elevated px-6 py-8 text-center">
+        <%= icon("check_circle", filled: true, css: "text-3xl text-tint") %>
+        <p class="mt-2 text-sm font-medium text-content">今日の目標を達成しました</p>
+        <p class="mt-1 text-sm text-content-faint">ここまでよく続けています。</p>
+        <div class="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-center">
+          <%= link_to "さらに演習を続ける", practice_path,
+                class: "rounded-xl border border-border-subtle px-5 py-2.5 text-sm font-medium text-content transition-colors hover:bg-surface-sunken" %>
+          <%= link_to "新しい単元を学ぶ", courses_path,
+                class: "rounded-xl border border-border-subtle px-5 py-2.5 text-sm font-medium text-content transition-colors hover:bg-surface-sunken" %>
+        </div>
+      </div>
+
+    <% elsif queue_total.positive? %>
+      <h2 class="mb-3 text-base font-semibold text-content">今日のキュー</h2>
+      <%= link_to practice_path,
+            class: "group flex items-center justify-between rounded-2xl border border-border-subtle bg-surface-elevated px-6 py-5 transition-colors hover:bg-surface-sunken" do %>
+        <div>
+          <p class="text-sm font-medium text-content">演習を始める</p>
+          <p class="mt-0.5 text-sm text-content-faint">
+            <% parts = [] %>
+            <% parts << "復習 #{@due_count} 問" if @due_count.positive? %>
+            <% parts << "新規 #{@new_count} 問" if @new_count.positive? %>
+            <%= parts.join("・") %>
+          </p>
+        </div>
+        <%= icon("arrow_forward", css: "text-xl text-content-faint transition-transform group-hover:translate-x-0.5") %>
+      <% end %>
+
+    <% else %>
+      <div class="rounded-2xl border border-border-subtle bg-surface-elevated px-6 py-10 text-center">
+        <p class="text-sm text-content-muted">今日のキューは空です。新しい単元を学んでみましょう。</p>
+        <%= link_to "学習を続ける", courses_path,
+              class: "mt-4 inline-block rounded-xl bg-tint px-5 py-2.5 text-sm font-medium text-on-tint" %>
       </div>
     <% end %>
   </section>

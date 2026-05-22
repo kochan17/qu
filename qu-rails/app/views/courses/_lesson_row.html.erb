@@ -1,0 +1,44 @@
+<%# レッスン行 — Apple Podcasts のエピソードカード風。
+    locals: lesson, completed %>
+
+<%
+  icon_name = case lesson.content_type
+              when "video" then "play_circle"
+              when "audio" then "headphones"
+              when "quiz"  then "quiz"
+              else              "article"
+              end
+
+  minutes = lesson.duration_seconds.present? && lesson.duration_seconds > 0 ?
+    "約#{(lesson.duration_seconds / 60.0).ceil}分" : nil
+%>
+
+<%= link_to lesson_path(lesson),
+      class: "group flex items-start gap-4 px-5 py-4 transition-colors hover:bg-surface-sunken" do %>
+  <%# コンテンツ種別アイコン — 背景なし、隣接テキストと光学的に揃える %>
+  <div class="mt-0.5 w-5 shrink-0 text-center">
+    <%= icon(icon_name, css: "text-[1.2rem] #{completed ? "text-tint" : "text-content-faint"}") %>
+  </div>
+
+  <%# 本文 %>
+  <div class="min-w-0 flex-1 space-y-0.5">
+    <p class="text-sm font-medium leading-snug text-content line-clamp-2"><%= lesson.title %></p>
+
+    <% if lesson.intro.present? %>
+      <p class="text-xs leading-relaxed text-content-faint line-clamp-2"><%= lesson.intro %></p>
+    <% end %>
+
+    <% if minutes %>
+      <p class="text-xs text-content-faint tabular-nums"><%= minutes %></p>
+    <% end %>
+  </div>
+
+  <%# 完了バッジ / 矢印 %>
+  <div class="mt-0.5 shrink-0">
+    <% if completed %>
+      <%= icon("check_circle", filled: true, css: "text-xl text-tint") %>
+    <% else %>
+      <%= icon("chevron_right", css: "text-xl text-content-faint transition-transform group-hover:translate-x-0.5") %>
+    <% end %>
+  </div>
+<% end %>

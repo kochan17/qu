@@ -19,7 +19,28 @@ class User < ApplicationRecord
   validates :streak_freeze_count, numericality: { greater_than_or_equal_to: 0 }
 
   # `admin?` / `user?` は enum :role が自動生成する。
-  # Daily Ring の 15% プリ充填（Endowed Progress）は onboarding フローの
-  # コントローラ／サービスで行う。別モデルを生成する model callback は
-  # Rails らしくないため置かない。
+
+  def onboarded?
+    preferred_certification.present?
+  end
+
+  # ストリークを更新する。Mastery-anchored — その日の Daily Ring（正答数）が
+  # 閉じた日だけを連続日数として数える。煽らず、終了時にだけ称える設計のため
+  # 数値は実態と一致させる。自テーブルのみを更新する。
+  def refresh_streak!(on_date: Date.current)
+    activity = daily_activities.find_by(date: on_date)
+    return unless activity&.core_completed?
+    return if last_active_date == on_date # 当日分は計上済み
+
+    self.current_streak =
+      (last_active_date == on_date - 1) ? current_streak + 1 : 1
+    self.last_active_date = on_date
+    self.longest_streak   = [ longest_streak, current_streak ].max
+    save!
+  end
+
+  # 試験前などに演出（リング・通知・バッジ）を全て止めるモード。
+  def calm_mode_active?
+    calm_mode? || (calm_mode_until.present? && calm_mode_until >= Date.current)
+  end
 end

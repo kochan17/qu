@@ -1,0 +1,116 @@
+<%# 設定画面 — Apple の設定アプリのような落ち着いたグループ化リスト。
+    引き算。装飾的な影・グラデーション・枠線を足さない。 %>
+<% content_for :title, "設定" %>
+
+<div class="mx-auto max-w-2xl space-y-8">
+
+  <h1 class="text-2xl font-semibold tracking-tight text-content">設定</h1>
+
+  <%= form_with model: @user, url: settings_path, method: :patch, class: "space-y-8" do |f| %>
+
+    <%# ── 1. プロフィール ───────────────────────────────────── %>
+    <section>
+      <h2 class="mb-2 text-xs font-semibold uppercase tracking-widest text-content-faint">プロフィール</h2>
+      <div class="divide-y divide-border-subtle overflow-hidden rounded-2xl border border-border-subtle bg-surface-elevated">
+        <div class="flex items-center gap-4 px-5 py-4">
+          <%= f.label :display_name, class: "w-24 shrink-0 text-sm text-content" do %>
+            表示名
+          <% end %>
+          <%= f.text_field :display_name,
+                placeholder: "名前を入力",
+                class: "min-w-0 flex-1 bg-transparent text-sm text-content placeholder:text-content-faint focus:outline-none" %>
+        </div>
+      </div>
+    </section>
+
+    <%# ── 2. 学習する資格 ────────────────────────────────────── %>
+    <section>
+      <h2 class="mb-2 text-xs font-semibold uppercase tracking-widest text-content-faint">学習する資格</h2>
+      <div class="divide-y divide-border-subtle overflow-hidden rounded-2xl border border-border-subtle bg-surface-elevated">
+        <% @certifications.each do |cert| %>
+          <label class="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-surface-sunken">
+            <div class="flex items-center gap-3">
+              <%= icon("school", css: "text-xl text-cert-#{cert.slug}") %>
+              <span class="text-sm text-content"><%= certification_name(cert.slug) %></span>
+            </div>
+            <%= f.radio_button :preferred_certification, cert.slug,
+                  class: "h-4 w-4 shrink-0 accent-tint" %>
+          </label>
+        <% end %>
+      </div>
+    </section>
+
+    <%# ── 3. 通知 ───────────────────────────────────────────── %>
+    <section>
+      <h2 class="mb-2 text-xs font-semibold uppercase tracking-widest text-content-faint">通知</h2>
+      <div class="divide-y divide-border-subtle overflow-hidden rounded-2xl border border-border-subtle bg-surface-elevated">
+        <%= render "settings/toggle_row",
+              f: f,
+              field: :morning_notification_enabled,
+              label: "朝の通知",
+              description: "今日のキューが届いたことをお知らせします" %>
+
+        <%= render "settings/toggle_row",
+              f: f,
+              field: :evening_notification_enabled,
+              label: "夜の通知",
+              description: "一日の振り返りをお届けします" %>
+      </div>
+    </section>
+
+    <%# ── 4. Calm Mode ──────────────────────────────────────── %>
+    <section>
+      <h2 class="mb-2 text-xs font-semibold uppercase tracking-widest text-content-faint">Calm Mode</h2>
+      <div class="divide-y divide-border-subtle overflow-hidden rounded-2xl border border-border-subtle bg-surface-elevated">
+        <%= render "settings/toggle_row",
+              f: f,
+              field: :calm_mode,
+              label: "Calm Mode",
+              description: "試験前など、リングや通知を控えめにします" %>
+      </div>
+    </section>
+
+    <%# ── 保存ボタン ─────────────────────────────────────────── %>
+    <div>
+      <%= f.submit "保存",
+            class: "w-full rounded-2xl bg-tint py-3 text-sm font-semibold text-on-tint transition-opacity hover:opacity-90 cursor-pointer" %>
+    </div>
+
+  <% end %>
+
+  <%# ── 5. アカウント（フォーム外）──────────────────────────── %>
+  <section>
+    <h2 class="mb-2 text-xs font-semibold uppercase tracking-widest text-content-faint">アカウント</h2>
+    <div class="divide-y divide-border-subtle overflow-hidden rounded-2xl border border-border-subtle bg-surface-elevated">
+
+      <%# メールアドレス（表示のみ）%>
+      <div class="flex items-center justify-between gap-4 px-5 py-4">
+        <span class="text-sm text-content">メールアドレス</span>
+        <span class="text-sm text-content-muted"><%= Current.user.email_address %></span>
+      </div>
+
+      <%# 自己ベスト（静かに表示。継続への煽りにならないよう終了後の記録として扱う）%>
+      <div class="flex items-center justify-between gap-4 px-5 py-4">
+        <span class="text-sm text-content">これまでの継続記録</span>
+        <span class="text-sm text-content-muted">自己ベスト <%= @user.longest_streak %> 日</span>
+      </div>
+
+      <%# パスワード変更 %>
+      <%= link_to new_password_path,
+            class: "flex items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-surface-sunken" do %>
+        <span class="text-sm text-content">パスワードの変更</span>
+        <%= icon("chevron_right", css: "text-xl text-content-faint") %>
+      <% end %>
+
+      <%# ログアウト %>
+      <div class="px-5 py-4">
+        <%= button_to session_path, method: :delete,
+              class: "w-full text-left text-sm text-incorrect transition-opacity hover:opacity-70" do %>
+          ログアウト
+        <% end %>
+      </div>
+
+    </div>
+  </section>
+
+</div>

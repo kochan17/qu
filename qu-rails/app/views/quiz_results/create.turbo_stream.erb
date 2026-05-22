@@ -1,0 +1,12 @@
+<%# 解答記録後 — 問題カードをフィードバックに、進捗を更新後の値に差し替える。 %>
+<%= turbo_stream.update "practice_card" do %>
+  <%= render "practice/feedback",
+        question:           @question,
+        selected_choice_id: @selected_choice_id,
+        correct:            @correct,
+        lesson_id:          practice_lesson&.id %>
+<% end %>
+
+<%= turbo_stream.update "practice_progress" do %>
+  <%= render "practice/progress", progress: @progress %>
+<% end %>

@@ -1,0 +1,16 @@
+<%# 演習の進捗バー。引数: progress { done:, total:, caption: } %>
+<% pct = progress[:total].positive? ?
+     [ (progress[:done].to_f / progress[:total] * 100).round, 100 ].min : 0 %>
+
+<div>
+  <div class="flex items-baseline justify-between">
+    <span class="text-sm text-content-muted"><%= progress[:caption] %></span>
+    <span class="text-sm tabular-nums text-content-faint">
+      <%= progress[:done] %> / <%= progress[:total] %>
+    </span>
+  </div>
+  <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-sunken">
+    <div class="h-full rounded-full bg-tint transition-all duration-500 ease-out"
+         style="width: <%= pct %>%"></div>
+  </div>
+</div>

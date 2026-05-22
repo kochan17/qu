@@ -1,0 +1,45 @@
+<%# コース一覧 — Apple Books 風カバー主体グリッド。 %>
+<% content_for :title, "学習" %>
+
+<div class="space-y-8">
+
+  <%# ── 見出し ──────────────────────────────────────────────── %>
+  <header>
+    <% if @certification %>
+      <p class="text-sm text-content-faint"><%= certification_name(@certification.slug) %></p>
+      <h1 class="mt-1 text-2xl font-semibold tracking-tight text-content">コース一覧</h1>
+    <% else %>
+      <h1 class="text-2xl font-semibold tracking-tight text-content">学習</h1>
+    <% end %>
+  </header>
+
+  <%# ── コンテンツ ───────────────────────────────────────────── %>
+  <% if @certification.nil? %>
+    <%# 資格未設定 %>
+    <div class="rounded-2xl border border-border-subtle bg-surface-elevated px-6 py-12 text-center">
+      <%= icon("school", css: "text-4xl text-content-faint") %>
+      <p class="mt-3 text-sm text-content-muted">学習する資格が設定されていません。</p>
+      <%= link_to "資格を選ぶ", settings_path,
+            class: "mt-4 inline-block rounded-xl bg-tint px-5 py-2.5 text-sm font-medium text-on-tint" %>
+    </div>
+
+  <% elsif @courses.empty? %>
+    <%# コンテンツ準備中 %>
+    <div class="rounded-2xl border border-border-subtle bg-surface-elevated px-6 py-12 text-center">
+      <%= icon("auto_stories", css: "text-4xl text-content-faint") %>
+      <p class="mt-3 text-sm font-medium text-content">コンテンツを準備中です</p>
+      <p class="mt-1 text-sm text-content-faint">もうしばらくお待ちください。</p>
+    </div>
+
+  <% else %>
+    <%# コースグリッド — スマホ2列、iPad 3〜4列 %>
+    <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <% @courses.each do |course| %>
+        <%= render "courses/course_card", course: course,
+              cert_slug: @certification.slug,
+              progress: @course_progress[course.id] || { total: 0, completed: 0 } %>
+      <% end %>
+    </div>
+  <% end %>
+
+</div>

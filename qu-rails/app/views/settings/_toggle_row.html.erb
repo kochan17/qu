@@ -1,0 +1,25 @@
+<%# トグル行パーシャル。チェックボックスを peer + has で CSS スイッチ風に整える。
+    過剰演出なし。シンプルなスイッチとして機能する。 %>
+<label class="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 transition-colors hover:bg-surface-sunken">
+  <div class="space-y-0.5">
+    <p class="text-sm text-content"><%= label %></p>
+    <p class="text-xs text-content-faint"><%= description %></p>
+  </div>
+
+  <%# peer チェックボックスを視覚的に隠し、カスタム描画で代替する。
+      :focus-visible で outline を維持しアクセシビリティを保つ。 %>
+  <span class="relative inline-flex shrink-0 items-center">
+    <%= f.check_box field,
+          class: "peer sr-only",
+          id: "user_#{field}" %>
+    <span class="block h-[28px] w-[48px] rounded-full border border-border-subtle bg-surface-sunken
+                 transition-colors duration-200
+                 peer-checked:border-tint peer-checked:bg-tint
+                 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-tint">
+    </span>
+    <span class="absolute left-[3px] block h-[22px] w-[22px] rounded-full bg-surface-elevated
+                 transition-transform duration-200
+                 peer-checked:translate-x-[20px]">
+    </span>
+  </span>
+</label>

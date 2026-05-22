@@ -1,9 +1,22 @@
-<h1>Update your password</h1>
+<% content_for :title, "新しいパスワード" %>
 
-<%= tag.div(flash[:alert], style: "color:red") if flash[:alert] %>
+<div class="mx-auto max-w-sm py-6">
+  <h1 class="text-center text-xl font-semibold tracking-tight text-content">新しいパスワード</h1>
 
-<%= form_with url: password_path(params[:token]), method: :put do |form| %>
-  <%= form.password_field :password, required: true, autocomplete: "new-password", placeholder: "Enter new password", maxlength: 72 %><br>
-  <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", placeholder: "Repeat new password", maxlength: 72 %><br>
-  <%= form.submit "Save" %>
-<% end %>
+  <%= form_with url: password_path(params[:token]), method: :put, class: "mt-8 space-y-5" do |form| %>
+    <div class="space-y-1.5">
+      <%= form.label :password, "新しいパスワード", class: "text-sm font-medium text-content" %>
+      <%= form.password_field :password, required: true, autofocus: true,
+            autocomplete: "new-password", maxlength: 72,
+            class: "block w-full rounded-xl border border-border-subtle bg-surface-elevated px-3.5 py-2.5 text-sm text-content focus:border-tint focus:outline-none" %>
+    </div>
+    <div class="space-y-1.5">
+      <%= form.label :password_confirmation, "パスワード（確認）", class: "text-sm font-medium text-content" %>
+      <%= form.password_field :password_confirmation, required: true,
+            autocomplete: "new-password", maxlength: 72,
+            class: "block w-full rounded-xl border border-border-subtle bg-surface-elevated px-3.5 py-2.5 text-sm text-content focus:border-tint focus:outline-none" %>
+    </div>
+    <%= form.submit "パスワードを保存",
+          class: "w-full cursor-pointer rounded-xl bg-tint px-4 py-2.5 text-sm font-medium text-on-tint transition-opacity hover:opacity-90" %>
+  <% end %>
+</div>

@@ -32,6 +32,25 @@ ip = Certification.find_or_create_by!(slug: "ip") do |c|
 end
 puts "Certification: #{ip.name}"
 
+# ── 残り 3 資格（Phase 1 はコンテンツ未投入の枠のみ）──────────
+[
+  { slug: "fe",    name: "基本情報技術者",     position: 1,
+    description: "ITエンジニアの登竜門。アルゴリズムと基礎理論を問う国家試験" },
+  { slug: "genai", name: "生成AIパスポート",   position: 2,
+    description: "生成AIを安全に活用するためのリテラシーを測る検定" },
+  { slug: "gken",  name: "G検定",             position: 3,
+    description: "ディープラーニングの基礎知識と活用方針を問う検定" }
+].each do |attrs|
+  cert = Certification.find_or_create_by!(slug: attrs[:slug]) do |c|
+    c.name         = attrs[:name]
+    c.description  = attrs[:description]
+    c.category     = "it"
+    c.is_published = true
+    c.position     = attrs[:position]
+  end
+  puts "Certification: #{cert.name}"
+end
+
 # ── コース 1: ストラテジ系 ──────────────────────────────────
 course1 = Course.find_or_create_by!(title: "ストラテジ系", certification: ip) do |c|
   c.description  = "経営戦略・情報戦略・システム戦略を学ぶ"

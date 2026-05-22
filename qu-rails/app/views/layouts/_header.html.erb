@@ -1,0 +1,37 @@
+<%# グローバルヘッダー — chrome only に backdrop-filter（Liquid Glass 風）。%>
+<header class="sticky top-0 z-40 border-b border-border-subtle bg-surface-elevated/80 backdrop-blur-xl">
+  <div class="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-5 py-3 sm:px-6">
+    <%= link_to root_path, class: "text-lg font-semibold tracking-tight text-content", "aria-label": "Que ホーム" do %>
+      Que
+    <% end %>
+
+    <%# iPad / デスクトップ: 中央ナビ。スマホはボトムタブに集約。%>
+    <nav class="hidden items-center gap-1 sm:flex" aria-label="メインナビゲーション">
+      <% [
+        [ :today,    "Today", root_path,     "today" ],
+        [ :learn,    "学習",  courses_path,  "menu_book" ],
+        [ :practice, "演習",  practice_path, "quiz" ],
+        [ :settings, "設定",  settings_path, "tune" ]
+      ].each do |key, label, path, icon_name| %>
+        <% active = current_nav == key %>
+        <%= link_to path,
+              class: "flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors #{active ? "bg-tint-soft text-tint font-medium" : "text-content-muted hover:text-content"}",
+              "aria-current": (active ? "page" : nil) do %>
+          <%= icon(icon_name, filled: active, css: "text-[1.1rem]") %>
+          <span><%= label %></span>
+        <% end %>
+      <% end %>
+    </nav>
+
+    <div class="flex items-center gap-3 text-sm">
+      <span class="hidden text-content-muted sm:inline">
+        <%= Current.user.display_name.presence || Current.user.email_address %>
+      </span>
+      <%= button_to session_path, method: :delete,
+            class: "text-content-faint transition-colors hover:text-content",
+            "aria-label": "ログアウト" do %>
+        <%= icon("logout", css: "text-[1.2rem]") %>
+      <% end %>
+    </div>
+  </div>
+</header>

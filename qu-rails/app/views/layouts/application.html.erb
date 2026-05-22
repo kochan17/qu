@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="ja">
   <head>
-    <title>Que</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title><%= content_for(:title).presence || "Que" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#2e2e38" media="(prefers-color-scheme: dark)">
     <meta charset="utf-8">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -11,47 +14,39 @@
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="apple-touch-icon" href="/icon.png">
 
+    <%# Material Symbols — 唯一許可されたアイコンセット %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body class="min-h-screen bg-neutral-50 text-neutral-900 antialiased">
-    <%# chrome: backdrop-filter で Liquid Glass 風に。問題文の背後には使わない %>
-    <header class="sticky top-0 z-50 border-b border-neutral-200/60 bg-white/80 backdrop-blur-md">
-      <div class="mx-auto flex max-w-4xl items-center justify-between px-6 py-3">
-        <a href="<%= root_path %>" class="text-lg font-semibold tracking-tight text-neutral-900">Que</a>
-
-        <nav class="hidden items-center gap-6 text-sm text-neutral-500 sm:flex">
-          <a href="<%= root_path %>" class="hover:text-neutral-900 transition-colors">Today</a>
-          <span class="cursor-default text-neutral-300">Courses</span>
-          <span class="cursor-default text-neutral-300">Settings</span>
-        </nav>
-
-        <div class="flex items-center gap-4 text-sm">
-          <% if authenticated? %>
-            <span class="text-neutral-500"><%= Current.user.display_name.presence || Current.user.email_address %></span>
-            <%= button_to "ログアウト", session_path, method: :delete,
-                class: "text-neutral-400 hover:text-neutral-700 transition-colors" %>
-          <% else %>
-            <%= link_to "ログイン", new_session_path, class: "text-neutral-500 hover:text-neutral-900 transition-colors" %>
-          <% end %>
-        </div>
-      </div>
-    </header>
-
-    <% if notice.present? %>
-      <div class="mx-auto max-w-4xl px-6 pt-4">
-        <p class="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700"><%= notice %></p>
-      </div>
+  <body class="min-h-screen antialiased <%= "pb-24 sm:pb-0" if app_chrome? %>">
+    <% if app_chrome? %>
+      <%= render "layouts/header" %>
     <% end %>
-    <% if alert.present? %>
-      <div class="mx-auto max-w-4xl px-6 pt-4">
-        <p class="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600"><%= alert %></p>
+
+    <% if flash[:notice].present? || flash[:alert].present? %>
+      <div class="mx-auto w-full max-w-5xl px-5 pt-4 sm:px-6"
+           data-controller="flash" data-flash-dismiss-after-value="5000">
+        <% if flash[:notice].present? %>
+          <p class="rounded-xl bg-correct-soft px-4 py-3 text-sm text-correct"><%= flash[:notice] %></p>
+        <% end %>
+        <% if flash[:alert].present? %>
+          <p class="rounded-xl bg-incorrect-soft px-4 py-3 text-sm text-incorrect"><%= flash[:alert] %></p>
+        <% end %>
       </div>
     <% end %>
 
-    <main class="mx-auto max-w-4xl px-6 py-10">
+    <main class="mx-auto w-full max-w-5xl px-5 py-8 sm:px-6 sm:py-10">
       <%= yield %>
     </main>
+
+    <% if app_chrome? %>
+      <%= render "layouts/bottom_nav" %>
+    <% end %>
   </body>
 </html>

@@ -1,0 +1,50 @@
+<%# 解答後フィードバック。引数: question / selected_choice_id / correct / lesson_id
+    解説の背後に Liquid Glass は使わない（可読性のため solid 背景）。 %>
+<div>
+  <p class="text-xs font-medium uppercase tracking-wide text-content-faint">解答</p>
+  <p class="mt-3 text-lg leading-relaxed text-content"><%= question.question_text %></p>
+
+  <div class="mt-7 space-y-2.5">
+    <% Array(question.choices).each_with_index do |choice, i| %>
+      <% is_answer   = question.correct?(choice["id"]) %>
+      <% is_selected = choice["id"].to_s == selected_choice_id.to_s %>
+      <%
+        tone =
+          if is_answer
+            "border-correct bg-correct-soft"
+          elsif is_selected
+            "border-incorrect bg-incorrect-soft"
+          else
+            "border-border-subtle bg-surface-elevated"
+          end
+      %>
+      <div class="flex items-center gap-3 rounded-2xl border px-4 py-3.5 <%= tone %>">
+        <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md bg-surface-sunken text-xs font-medium tabular-nums text-content-muted">
+          <%= i + 1 %>
+        </span>
+        <span class="flex-1 text-sm leading-relaxed text-content"><%= choice["text"] %></span>
+        <% if is_answer %>
+          <%= icon("check_circle", filled: true, css: "text-xl text-correct") %>
+        <% elsif is_selected %>
+          <%= icon("cancel", filled: true, css: "text-xl text-incorrect") %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-6 rounded-2xl bg-surface-sunken px-5 py-4">
+    <p class="text-sm font-medium <%= correct ? "text-correct" : "text-content" %>">
+      <%= correct ? "正解です" : "あと一歩。解説で確認しておきましょう" %>
+    </p>
+    <% if question.explanation.present? %>
+      <p class="mt-2 text-sm leading-relaxed text-content-muted"><%= question.explanation %></p>
+    <% end %>
+  </div>
+
+  <%= link_to practice_path(lesson_id: lesson_id),
+        data: { turbo_frame: "practice_card" },
+        class: "mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl bg-tint px-4 py-3 text-sm font-medium text-on-tint transition-opacity hover:opacity-90" do %>
+    次の問題へ
+    <%= icon("arrow_forward", css: "text-lg") %>
+  <% end %>
+</div>

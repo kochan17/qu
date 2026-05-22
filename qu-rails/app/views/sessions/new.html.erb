@@ -1,11 +1,31 @@
-<%= tag.div(flash[:alert], style: "color:red") if flash[:alert] %>
-<%= tag.div(flash[:notice], style: "color:green") if flash[:notice] %>
+<% content_for :title, "ログイン" %>
 
-<%= form_with url: session_path do |form| %>
-  <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address] %><br>
-  <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Enter your password", maxlength: 72 %><br>
-  <%= form.submit "Sign in" %>
-<% end %>
-<br>
+<div class="mx-auto max-w-sm py-6">
+  <div class="text-center">
+    <p class="text-2xl font-semibold tracking-tight text-content">Que</p>
+    <p class="mt-2 text-sm text-content-faint">資格学習を、毎日の習慣に。</p>
+  </div>
 
-<%= link_to "Forgot password?", new_password_path %>
+  <%= form_with url: session_path, class: "mt-10 space-y-5" do |form| %>
+    <div class="space-y-1.5">
+      <%= form.label :email_address, "メールアドレス", class: "text-sm font-medium text-content" %>
+      <%= form.email_field :email_address, required: true, autofocus: true,
+            autocomplete: "username", value: params[:email_address],
+            class: "block w-full rounded-xl border border-border-subtle bg-surface-elevated px-3.5 py-2.5 text-sm text-content focus:border-tint focus:outline-none" %>
+    </div>
+
+    <div class="space-y-1.5">
+      <%= form.label :password, "パスワード", class: "text-sm font-medium text-content" %>
+      <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72,
+            class: "block w-full rounded-xl border border-border-subtle bg-surface-elevated px-3.5 py-2.5 text-sm text-content focus:border-tint focus:outline-none" %>
+    </div>
+
+    <%= form.submit "ログイン",
+          class: "w-full cursor-pointer rounded-xl bg-tint px-4 py-2.5 text-sm font-medium text-on-tint transition-opacity hover:opacity-90" %>
+  <% end %>
+
+  <div class="mt-6 flex items-center justify-between text-sm">
+    <%= link_to "パスワードを忘れた方", new_password_path, class: "text-content-faint hover:text-content" %>
+    <%= link_to "アカウント作成", new_registration_path, class: "font-medium text-tint hover:opacity-80" %>
+  </div>
+</div>

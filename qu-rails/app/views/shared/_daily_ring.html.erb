@@ -1,0 +1,25 @@
+<%# Daily Ring — 正答数（Mastery-anchored）で進む円環。
+    引数: activity（DailyActivity）/ size（任意, 既定 144）。 %>
+<% size   ||= 144
+   stroke   = (size / 12.0).round
+   radius   = (size / 2.0) - (stroke / 2.0) - 2
+   circ     = (2 * Math::PI * radius).round(2)
+   pct      = activity.core_percent
+   offset   = (circ * (1 - pct / 100.0)).round(2) %>
+
+<div class="relative flex-shrink-0" style="width: <%= size %>px; height: <%= size %>px;">
+  <svg viewBox="0 0 <%= size %> <%= size %>" class="-rotate-90" aria-hidden="true">
+    <circle cx="<%= size / 2 %>" cy="<%= size / 2 %>" r="<%= radius %>"
+            fill="none" stroke-width="<%= stroke %>" class="stroke-surface-sunken" />
+    <circle cx="<%= size / 2 %>" cy="<%= size / 2 %>" r="<%= radius %>"
+            fill="none" stroke-width="<%= stroke %>" stroke-linecap="round"
+            stroke-dasharray="<%= circ %>" stroke-dashoffset="<%= offset %>"
+            class="stroke-tint transition-all duration-700 ease-out" />
+  </svg>
+  <div class="absolute inset-0 flex flex-col items-center justify-center">
+    <span class="text-4xl font-semibold leading-none tabular-nums text-content">
+      <%= activity.core_done %>
+    </span>
+    <span class="mt-1 text-xs text-content-faint">/ <%= activity.core_goal %> 問</span>
+  </div>
+</div>

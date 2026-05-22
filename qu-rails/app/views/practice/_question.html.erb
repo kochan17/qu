@@ -1,0 +1,39 @@
+<%# 出題カード。引数: question（Question）/ lesson_id（任意）
+    揺れない・進捗後退無し・選択は落ち着いた highlight のみ。 %>
+<div data-controller="practice">
+  <p class="text-xs font-medium uppercase tracking-wide text-content-faint">問題</p>
+  <p class="mt-3 text-lg leading-relaxed text-content"><%= question.question_text %></p>
+
+  <%= form_with url: quiz_results_path, method: :post, class: "mt-7 space-y-3" do %>
+    <%= hidden_field_tag :question_id, question.id %>
+    <%= hidden_field_tag :selected_choice_id, "", data: { practice_target: "input" } %>
+    <% if lesson_id.present? %>
+      <%= hidden_field_tag :lesson_id, lesson_id %>
+    <% end %>
+
+    <div class="space-y-2.5" role="radiogroup" aria-label="選択肢">
+      <% Array(question.choices).each_with_index do |choice, i| %>
+        <button type="button" role="radio" aria-checked="false"
+                data-practice-target="choice"
+                data-choice-id="<%= choice["id"] %>"
+                data-action="practice#select"
+                data-selected="false"
+                class="group flex w-full items-center gap-3 rounded-2xl border border-border-subtle bg-surface-elevated px-4 py-3.5 text-left transition-colors hover:bg-surface-sunken data-[selected=true]:border-tint data-[selected=true]:bg-tint-soft">
+          <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md bg-surface-sunken text-xs font-medium tabular-nums text-content-muted transition-colors group-data-[selected=true]:bg-tint group-data-[selected=true]:text-on-tint">
+            <%= i + 1 %>
+          </span>
+          <span class="text-sm leading-relaxed text-content"><%= choice["text"] %></span>
+        </button>
+      <% end %>
+    </div>
+
+    <button type="submit" disabled data-practice-target="submit"
+            class="mt-2 w-full cursor-pointer rounded-xl bg-tint px-4 py-3 text-sm font-medium text-on-tint transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40">
+      解答する
+    </button>
+  <% end %>
+
+  <p class="text-center text-xs text-content-faint">
+    キーボードの 1〜<%= Array(question.choices).size %> で選択、Enter で解答できます
+  </p>
+</div>
