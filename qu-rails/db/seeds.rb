@@ -5,8 +5,8 @@
 
 # ── ユーザー ──────────────────────────────────────────────
 admin = User.find_or_create_by!(email_address: "admin@que.test") do |u|
-  u.password              = "password"
-  u.password_confirmation = "password"
+  u.password              = "password1234"
+  u.password_confirmation = "password1234"
   u.display_name          = "管理者"
   u.role                  = "admin"
   u.preferred_certification = "ip"
@@ -14,8 +14,8 @@ end
 puts "User: #{admin.email_address} (#{admin.role})"
 
 learner = User.find_or_create_by!(email_address: "user@que.test") do |u|
-  u.password              = "password"
-  u.password_confirmation = "password"
+  u.password              = "password1234"
+  u.password_confirmation = "password1234"
   u.display_name          = "学習者"
   u.role                  = "user"
   u.preferred_certification = "ip"
