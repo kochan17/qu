@@ -1,0 +1,24 @@
+version: 2
+
+updates:
+  - package-ecosystem: bundler
+    directory: /qu-rails
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "bundler:"
+
+  - package-ecosystem: npm
+    directory: /qu-rails
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "npm:"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5

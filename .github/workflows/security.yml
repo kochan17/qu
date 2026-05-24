@@ -1,0 +1,68 @@
+name: Security Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  bundle-audit:
+    name: bundle-audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: qu-rails
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version-file: qu-rails/.ruby-version
+          bundler-cache: true
+          working-directory: qu-rails
+
+      - name: Run bundler-audit
+        run: bundle exec bundle-audit check --update
+
+  brakeman:
+    name: brakeman
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: qu-rails
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version-file: qu-rails/.ruby-version
+          bundler-cache: true
+          working-directory: qu-rails
+
+      - name: Run brakeman
+        run: bundle exec brakeman --no-pager --exit-on-warn
+
+  npm-audit:
+    name: npm-audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: qu-rails
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: qu-rails/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
