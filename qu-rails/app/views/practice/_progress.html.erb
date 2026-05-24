@@ -1,16 +1,22 @@
-<%# 演習の進捗バー。引数: progress { done:, total:, caption: } %>
+<%# 演習の進捗バー。引数: progress { done:, total:, caption: }
+    進捗は後退しない（Safe Failure Design）。 %>
 <% pct = progress[:total].positive? ?
      [ (progress[:done].to_f / progress[:total] * 100).round, 100 ].min : 0 %>
 
-<div>
-  <div class="flex items-baseline justify-between">
-    <span class="text-sm text-content-muted"><%= progress[:caption] %></span>
-    <span class="text-sm tabular-nums text-content-faint">
-      <%= progress[:done] %> / <%= progress[:total] %>
+<div class="space-y-1.5">
+  <div class="flex items-center justify-between gap-2">
+    <span class="text-sm font-medium text-on-surface-variant">
+      進捗状況:
+      <span class="text-on-surface">
+        <%= progress[:done] %> / <%= progress[:total] %> 問完了
+      </span>
+    </span>
+    <span class="font-label text-sm font-semibold tabular-nums text-primary">
+      <%= pct %>%
     </span>
   </div>
-  <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-sunken">
-    <div class="h-full rounded-full bg-tint transition-all duration-500 ease-out"
+  <div class="h-2 overflow-hidden rounded-sm bg-surface-container-high">
+    <div class="h-full rounded-sm bg-primary transition-all duration-500 ease-out"
          style="width: <%= pct %>%"></div>
   </div>
 </div>

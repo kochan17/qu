@@ -1,27 +1,26 @@
-<%# 演習画面 — Apple Journal × CBT。余白を最大に、1 画面 1 問。 %>
+<%# 演習画面 — Udemy 風。1 画面 1 問。 %>
 <% content_for :title, "演習" %>
 
-<div class="mx-auto max-w-2xl space-y-6">
+<div class="mx-auto max-w-3xl px-4 py-10 md:py-14 space-y-6 sm:px-0">
 
-  <%# ── 最小ツールバー ───────────────────────────────────────── %>
-  <header class="flex items-center justify-between">
+  <%# ヘッダ %>
+  <header class="flex items-center justify-between gap-4">
     <%= link_to (practice_lesson ? lesson_path(practice_lesson) : root_path),
-          class: "flex items-center gap-1 text-sm text-content-faint transition-colors hover:text-content" do %>
-      <%= icon("arrow_back", css: "text-lg") %>
-      <span><%= practice_lesson ? "レッスン" : "Today" %></span>
+          class: "inline-flex items-center gap-1 text-sm text-on-surface-variant hover:text-on-surface transition-colors" do %>
+      <%= icon("arrow_back", css: "text-base") %>
+      <span><%= practice_lesson ? practice_lesson.title : "ダッシュボード" %></span>
     <% end %>
-    <p class="text-sm font-medium text-content">
-      <%= practice_lesson ? "レッスンの演習" : "今日の演習" %>
-    </p>
-    <span class="w-14"></span>
+    <span class="text-sm font-medium text-on-surface-variant">
+      <%= practice_lesson ? "レッスン演習" : "今日の演習" %>
+    </span>
   </header>
 
-  <%# ── 進捗（進捗バーは後退しない — Safe Failure Design）──────── %>
+  <%# 進捗バー %>
   <div id="practice_progress">
     <%= render "practice/progress", progress: @progress %>
   </div>
 
-  <%# ── 問題カード ───────────────────────────────────────────── %>
+  <%# 問題カード（Turbo Frame — フィードバック差し替え対象） %>
   <turbo-frame id="practice_card">
     <% if @question %>
       <%= render "practice/question", question: @question, lesson_id: practice_lesson&.id %>

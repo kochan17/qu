@@ -1,39 +1,57 @@
 <%# 出題カード。引数: question（Question）/ lesson_id（任意）
-    揺れない・進捗後退無し・選択は落ち着いた highlight のみ。 %>
-<div data-controller="practice">
-  <p class="text-xs font-medium uppercase tracking-wide text-content-faint">問題</p>
-  <p class="mt-3 text-lg leading-relaxed text-content"><%= question.question_text %></p>
+    Stimulus: data-controller="practice"。target/action/data-* は変えない。 %>
+<div class="card px-5 py-6 md:px-8" data-controller="practice">
 
-  <%= form_with url: quiz_results_path, method: :post, class: "mt-7 space-y-3" do %>
+  <%# 問題番号ラベル + 問題文 %>
+  <div class="flex items-start gap-3">
+    <span class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded bg-primary text-xs font-bold text-on-primary font-label">
+      Q
+    </span>
+    <p class="font-body text-base leading-relaxed text-on-surface md:text-lg">
+      <%= question.question_text %>
+    </p>
+  </div>
+
+  <%# 選択肢フォーム %>
+  <%= form_with url: quiz_results_path, method: :post, class: "mt-6 space-y-2.5" do %>
     <%= hidden_field_tag :question_id, question.id %>
     <%= hidden_field_tag :selected_choice_id, "", data: { practice_target: "input" } %>
     <% if lesson_id.present? %>
       <%= hidden_field_tag :lesson_id, lesson_id %>
     <% end %>
 
-    <div class="space-y-2.5" role="radiogroup" aria-label="選択肢">
+    <div class="space-y-2" role="radiogroup" aria-label="選択肢">
+      <% letters = %w[A B C D E F] %>
       <% Array(question.choices).each_with_index do |choice, i| %>
         <button type="button" role="radio" aria-checked="false"
                 data-practice-target="choice"
                 data-choice-id="<%= choice["id"] %>"
                 data-action="practice#select"
                 data-selected="false"
-                class="group flex w-full items-center gap-3 rounded-2xl border border-border-subtle bg-surface-elevated px-4 py-3.5 text-left transition-colors hover:bg-surface-sunken data-[selected=true]:border-tint data-[selected=true]:bg-tint-soft">
-          <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md bg-surface-sunken text-xs font-medium tabular-nums text-content-muted transition-colors group-data-[selected=true]:bg-tint group-data-[selected=true]:text-on-tint">
-            <%= i + 1 %>
+                class="group flex w-full items-center gap-3 rounded-md border border-outline-variant bg-surface-container-lowest px-4 py-3 text-left transition-colors
+                       hover:bg-surface-container
+                       data-[selected=true]:border-primary data-[selected=true]:bg-primary-fixed">
+          <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded font-label text-xs font-semibold text-on-surface-variant bg-surface-container-high transition-colors
+                       group-data-[selected=true]:bg-primary group-data-[selected=true]:text-on-primary">
+            <%= letters[i] %>
           </span>
-          <span class="text-sm leading-relaxed text-content"><%= choice["text"] %></span>
+          <span class="font-body text-sm leading-relaxed text-on-surface">
+            <%= choice["text"] %>
+          </span>
         </button>
       <% end %>
     </div>
 
-    <button type="submit" disabled data-practice-target="submit"
-            class="mt-2 w-full cursor-pointer rounded-xl bg-tint px-4 py-3 text-sm font-medium text-on-tint transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40">
-      解答する
-    </button>
+    <div class="pt-3">
+      <button type="submit" disabled data-practice-target="submit"
+              class="btn btn-primary btn-block">
+        回答を確認する
+      </button>
+    </div>
   <% end %>
 
-  <p class="text-center text-xs text-content-faint">
+  <p class="mt-3 text-center font-label text-xs text-on-surface-variant">
     キーボードの 1〜<%= Array(question.choices).size %> で選択、Enter で解答できます
   </p>
+
 </div>
