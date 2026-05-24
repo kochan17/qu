@@ -42,7 +42,7 @@ jobs:
       DATABASE_URL: postgres://postgres:postgres@localhost:5432/qu_test
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: ruby/setup-ruby@v1
         with:
