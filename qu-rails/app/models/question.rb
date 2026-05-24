@@ -45,4 +45,15 @@ class Question < ApplicationRecord
   def correct?(choice_id)
     correct_choice_id.present? && choice_id.to_s == correct_choice_id.to_s
   end
+
+  # 受講者へのカンニング防止: 正解・解説は admin が明示的に要求した時のみ JSON に含める。
+  # 学習者向け画面は HTML レンダリングで使うため影響しないが、将来の JSON API を守る。
+  def as_json(options = {})
+    super(options).tap do |h|
+      unless options[:include_correct]
+        h.delete("correct_choice_id")
+        h.delete("explanation")
+      end
+    end
+  end
 end

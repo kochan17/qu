@@ -1,36 +1,36 @@
 # frozen_string_literal: true
 
-# 1 問の解答を記録する。FSRS-5 の復習状態更新・Daily Ring・ストリークを
-# コントローラで順に呼び出して調停する（cross-model 副作用 callback は持たない）。
+# 1 問の解答を記録する。記録処理は Practice::AnswerSubmission に委譲する。
 class QuizResultsController < ApplicationController
   include PracticeScope
 
   def create
-    @question           = Question.published.find(params[:question_id])
-    @selected_choice_id = params[:selected_choice_id].to_s.presence
-    @correct            = @question.correct?(@selected_choice_id)
+    question = fetch_submitted_question!
+    authorize question, :show?
 
-    review_state = Current.user.question_review_states.find_or_initialize_by(question: @question)
-    kind         = review_state.new_record? ? :learn : :recall
+    @result   = Practice::AnswerSubmission.new(
+      user:      Current.user,
+      question:  question,
+      choice_id: params[:selected_choice_id]
+    ).call
+    @progress = build_progress
+  end
 
-    Current.user.quiz_results.create!(
-      question:           @question,
-      selected_choice_id: @selected_choice_id,
-      is_correct:         @correct
-    )
-    review_state.apply_review!(correct: @correct)
+  private
 
-    if @correct
-      activity = Current.user.daily_activities.find_or_create_by!(date: Date.current)
-      activity.record_correct!(kind)
-      Current.user.refresh_streak!
-    end
+  def fetch_submitted_question!
+    question = PracticeQueue.new(Current.user).next_question(lesson: practice_lesson)
+    raise ActiveRecord::RecordNotFound if question.nil? || question.id.to_s != params[:question_id].to_s
 
-    @progress = practice_progress
+    question
+  end
 
-    respond_to do |format|
-      format.turbo_stream
-      format.html { redirect_to practice_path(lesson_id: practice_lesson&.id) }
+  def build_progress
+    if practice_lesson
+      practice_lesson.progress_for(Current.user).merge(caption: practice_lesson.title)
+    else
+      activity = Current.user.today_activity
+      { done: activity.core_done, total: activity.core_goal, caption: "今日の目標" }
     end
   end
 end
