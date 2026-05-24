@@ -43,7 +43,9 @@ jobs:
           working-directory: qu-rails
 
       - name: Run brakeman
-        run: bundle exec brakeman --no-pager --exit-on-warn
+        # Weak confidence は false positive が多いため Medium 以上で fail させる
+        # (例: RQRCode 生成 SVG の html_safe 出力など、出処が確定している警告は外す)
+        run: bundle exec brakeman --no-pager --confidence-level 2 --exit-on-warn
 
   npm-audit:
     name: npm-audit
