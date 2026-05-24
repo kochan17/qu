@@ -3,7 +3,7 @@
 **DB**: PostgreSQL 16 + pgvector（**単一データベース**。Solid Cache/Queue/Cable も同居）。
 **ORM**: Active Record（Rails 8）。マイグレーション置き場: `qu-rails/db/migrate/`。
 **認可**: RLS は使わない。**Pundit ポリシー**（`qu-rails/app/policies/`）で代替。
-**詳細設計**: `.dev/設計書_DBスキーマ_Que.md`（v3 — 全テーブルのカラム・型・制約・インデックス）。
+**詳細設計**: `.dev/設計書_DBスキーマ_Qu.md`（v3 — 全テーブルのカラム・型・制約・インデックス）。
 
 ## 設計原則
 
@@ -15,34 +15,37 @@
 - DB 制約（NOT NULL / unique / CHECK / FK）とモデルバリデーションを両方持つ。
   ただし DB デフォルト列（`created_at` 等）に presence バリデーションは付けない。
 
-## コア 13 テーブル（実装済み）
+## コアテーブル（実装済み）
 
 - **users** — Rails 8 標準認証（`email_address` / `password_digest`）+ プロフィール + ストリークを 1 テーブルに統合。`role` enum（user / admin）
 - **sessions** — Rails 8 標準認証のセッション
 - **subscriptions** — Stripe サブスク状態（status / source / stripe_* / current_period_end）
-- **certifications → courses → sections → lessons → questions** — コンテンツ階層（4 段の別テーブル + 問題）。`lessons.content_type`、`questions.format` / `status`、`questions.choices` は jsonb
+- **certifications → courses → sections → lessons → questions** — コンテンツ階層（4 段の別テーブル + 問題）。`lessons.content_type` / `lessons.video_status`、`questions.format` / `status`、`questions.choices` は jsonb
 - **quiz_results** — 解答履歴
 - **lesson_completions** — レッスン完了（旧 progress）
 - **question_review_states** — FSRS-5 の per-user/per-question 状態
-- **daily_activities** — Daily Ring。`completed` は生成列（STORED）
-- **section_masteries** — 80% 習熟ゲート用スコア
-- **notifications** — 通知
+- **daily_activities** — Daily Ring。`completed` は生成列（STORED、復習 + 新規の正答数で判定）
 
-加えて Active Storage 3 テーブル、Solid Cache/Queue/Cable のテーブル（`create_solid_tables` マイグレーション）。
+加えて Active Storage 3 テーブル、Solid Cache/Queue/Cable のテーブル。
+レッスンの動画・画像は Active Storage 添付（`Lesson` の `has_one_attached :video` / `has_many_attached :images`）。
 
-## 後で追加する 10 テーブル（機能と同時・YAGNI）
+> **2026-05-23 整理**: 未実装で未使用だった `notifications` / `section_masteries` テーブル、
+> `users.avatar_url`、`daily_activities` の audio 列を削除（UI ドリブンの再設計）。
 
-bookmarks / annotations（highlight・pin・ink を kind enum で統合）/ annotation_events / content_versions / embeddings（pgvector・RAG）/ ai_qa_histories / lesson_projects / lesson_scenes / lesson_render_jobs / invitations
+## 後で追加するテーブル（機能と同時・YAGNI）
+
+bookmarks / annotations（highlight・pin・ink を kind enum で統合）/ annotation_events / content_versions / embeddings（pgvector・RAG）/ ai_qa_histories / invitations
 
 ## Pundit 認可パターン
 
 | パターン | 対象 | ポリシー |
 |---|---|---|
-| 自分のデータのみ | quiz_results, lesson_completions, question_review_states, daily_activities, section_masteries, notifications, subscriptions(read) | `record.user_id == user.id` |
+| 自分のデータのみ | quiz_results, lesson_completions, question_review_states, daily_activities, subscriptions(read) | `record.user_id == user.id` |
 | 公開コンテンツは全員 read | certifications, courses, sections, lessons, questions | `published` スコープ |
 | admin 限定の write | 上記コンテンツ系の作成・更新・削除 | `user.admin?` |
 
 基底ポリシー: `OwnedRecordPolicy` / `PublicContentPolicy`。
+運営者向けカリキュラム管理は `Admin::` 名前空間（`Admin::BaseController` が admin ロールを要求）。
 
 ## 規約
 

@@ -1,107 +1,104 @@
 # Design Principles
 
-> **Que のデザインは Apple 純正アプリに全振り。「Apple が資格学習アプリを作ったらこうなる」が唯一のゴール。**
-> 対象: `qu-rails`（Rails 8 + Hotwire の Web）。iOS は Hotwire Native が同じ HTML を WebView シェルで表示するため、**設計は「iPad Safari 上の Apple 品質 Web」を基準にする**。`qu-site`（marketing）は別ルール。
+> **Qu のデザインは Udemy 風の学習プラットフォーム UI（Material 3 ベースのブルー）。**
+> 出典: Stitch プロジェクト `stitch_udemy_design_system`（2026-05-22 採用）。
+> 対象: `qu-rails`（Rails 8 + Hotwire の Web）。iOS は Hotwire Native が同じ HTML を WebView で表示するため、設計は「Web 上のこのデザインシステム」を基準にする。`qu-site`（marketing）は別ルール。
 
-## 核となる哲学（Apple HIG Foundations）
+## 採用方針（最重要）
 
-- **Clarity** — コンテンツ（問題文・選択肢）が主役。装飾的な影・グラデーション・枠線を排除
-- **Deference** — UI は引き算。ナビゲーションは半透明素材でコンテンツに道を譲る
-- **Depth** — 階層を Z 軸で表現。`backdrop-filter` で層を分離
-- **Less but better** — 1 画面 1 情報。問題画面に出すのは「問題文 / 選択肢 / 残り問題数」のみ
-- 参照: https://developer.apple.com/design/human-interface-guidelines/foundations
+- **Udemy 風の学習プラットフォーム UI を、Qu の定額制プロダクトとして再現する。** トップナビ + コンテンツ + ブルーのフッター。コース詳細はリッチなランディング、レッスンは専用プレーヤー。
+- **ただし Qu は月額 ¥980 の定額制（受け放題）。** 単品販売型のコマース要素（カート・単品価格・割引率・クーポン・ギフト・FOMO コピー）は再現しない。コース詳細の購入枠は「サブスクリプションに含まれる」「学習を始める」に翻訳する。
+- デザイントークンは Material 3 のセマンティック命名（`surface` / `surface-container-*` / `on-surface` / `primary` / `outline` 等）。ボタンの塗りは `brand-blue #0052cc`。
+- 値はすべて `qu-rails/app/assets/stylesheets/application.tailwind.css` の `@theme` に集約（Tailwind v4）。view に固定 hex を直書きしない。
+- **ライト一本。** 時刻・OS 連動の配色切替はしない。
+- React 製コンポーネントライブラリ・SPA フレームワークは載せない。**ERB + Tailwind CSS v4 + Hotwire** で再現する。インライン `<script>` を書かず、対話は Stimulus（`accordion` / `tabs` / `practice` / `flash`）で実装する。
+- アイコンは **Material Symbols Outlined** のみ。
+
+## カラー（Material 3 セマンティックトークン）
+
+- **ボタン・主要アクション = `brand-blue #0052cc`。** プライマリ文字・リンク・枠は `primary #003d9b`。
+- 背景 = `surface #faf8ff`。コンテンツ面 = `surface-container-lowest #ffffff`。沈み面 = `surface-container` / `-high` / `-highest`。
+- フルブリードの帯（コース詳細ヒーロー・フッター・プレーヤーのナビ）= `brand-blue` または `primary`、文字は白。
+- テキスト = `on-surface #191b23`（主）／ `on-surface-variant #434654`（副）／ `outline #737685`（淡）。
+- 枠線 = `outline-variant #c3c6d6`。
+- 完了・チェック = `secondary #006b57`（緑系）。星評価は `tertiary` 系（橙）。
+- フィードバック: 正解 = `correct #006b57` / 不正解 = `incorrect #ba1a1a`（それぞれ `-soft` の淡面あり）。
+- フォーカス = `focus #0091ff`（キーボード操作時のみ 2px outline）。
+- 資格カテゴリカラー = `cert-ip`(青) / `cert-fe`(緑) / `cert-genai`(紫) / `cert-gken`(橙)。
+- Tailwind セマンティッククラス経由で使う。固定 hex 直書き禁止。
 
 ## タイポグラフィ
 
-- **システムフォントスタック `-apple-system`**（Tailwind の `font-sans`）。iPad / Mac Safari・iOS の WebView では自動的に **SF Pro** が使われる。日本語は Hiragino Sans に自動フォールバック
-- **ブラウザのフォントサイズ設定を尊重**。`rem` ベースで組み、固定 px で本文を縛らない
-- 階層: 見出し（問題番号・セクション）/ 本文（問題文）/ 選択肢 / 解説 / 補足 — Tailwind のサイズトークンで段階を作る
+- **見出し = `font-headline`（Public Sans）／ 本文 = `font-body`（Inter）／ ラベル・ボタン = `font-label`（Geist）。** 日本語グリフは Hiragino にフォールバック。
+- Udemy らしく**見出しは太字（700〜900）**で強く立てる。本文は通常ウェイト。
+- スケール: `display-lg`(48) / `headline-lg`(32) / `headline-lg-mobile`(24) / `body-md`(16) / `label-caps`(12・大文字ラベル) + Tailwind 標準サイズ。
+
+## レイアウト
+
+- **標準ページ**: 白い sticky トップナビ（ロゴ・検索・ナビ・アバター）+ コンテンツ + ブルーのフッター。コンテンツは `max-w-7xl` 中央寄せ。フルブリードのヒーロー帯は幅いっぱい、内側に `max-w-7xl`。
+- **レッスンプレーヤー**: 独自シェル。`primary` 帯のナビ + 2 ペイン（左 = 動画/本文、右 = コースの内容サイドバー）。標準ヘッダー/フッターは出さない。
+- **認証画面**: 独自レイアウト。淡い背景の中央に 1 枚のカード。
+- **モバイル**: トップナビは簡略化し、ボトムタブ（マイラーニング / コースを探す / 演習 / 設定）を併用。
+
+## コンポーネント（`application.tailwind.css` に定義）
+
+- **ボタン = `.btn` + バリアント。** 角丸は浅め（4px）・font-weight 700。`.btn-primary`（brand-blue 塗り）／ `.btn-outline`（白地 + `on-surface` 枠）／ `.btn-neutral`（淡グレー面）。修飾 `.btn-sm` `.btn-lg` `.btn-block`。
+- **カード = `.card`**（白面 + `outline-variant` 枠 + 角丸 8px）。**コースカード = `.course-card`**（hover で `shadow-raised` に持ち上がる）。
+- **角丸は全体に浅い**（Udemy らしい四角め。4〜8px 主体）。
+- アコーディオン・タブは Stimulus（`accordion` / `tabs`）で。
 
 ## アイコン
 
-- **Material Symbols のみ使用**（Web フォント）。他のアイコンセット禁止
-- 隣接テキストと光学的な重さを揃える（サイズ・ウェイトを本文に同期）
-- アイコンの背景に色付きの丸／角丸アクセントを置かない（`~/.claude/rules/ui-icon-styling.md`）
-
-## カラー
-
-- **セマンティックトークンを Tailwind の `@theme` で定義**して使う。固定 hex の直書き禁止
-- ライト / ダークは CSS `prefers-color-scheme` で自動切替（時刻連動の背景色変化は禁止）
-- フィードバック: 正解＝グリーン系 / 不正解＝レッド系のセマンティックトークン
-- アクセント: tint を 1 色。資格ごとのカテゴリカラーは背景に淡く滲ませる（Apple Music 方式）
-- コントラスト基準: 通常 4.5:1、大テキスト 3:1（ライト / ダーク両方で検証）
+- **Material Symbols Outlined のみ**。ヘルパー `icon(name, filled:, css:)`。
+- アイコンの背景に色付きの丸を置いてよい（デザインシステムとして許容。`~/.claude/rules/ui-icon-styling.md` の例外条項に該当）。
 
 ## モーション
 
-- **CSS transition / View Transitions / Turbo のページ遷移**で表現。spring 的な弾みは `cubic-bezier` で
-- **Reduced Motion 必須対応** — `@media (prefers-reduced-motion: reduce)` でフェードに切替
-- **触覚フィードバック** — Web では原則なし。iOS（Hotwire Native）でのみ Bridge Component 経由で付与。
-  不正解時は warning 相当（error 相当は使わない — 心理的安全性、ペナルティ感の回避）
-
-## 素材（Liquid Glass 風）
-
-- CSS `backdrop-filter: blur()` + 半透明背景で近似。Safari / Chrome で動作、Firefox はフォールバック（半透明・影なし）
-- **適用は chrome のみ**（ヘッダー / ナビ / ツールバー / シート）
-- **絶対避ける場所**: 問題文・解説の背景（NN/g 報告で 15% time-on-task regression、可読性が壊れる）
-- ガラス要素の重ね置き（glass-on-glass）厳禁
-
-## ナビゲーション
-
-- **iPad 横持ち**: 資格 → コース/セクション → 問題/レッスン の 3 カラムを **CSS グリッドで実装**（Hotwire Native はネイティブ SplitView 非対応のため、Web レイアウトで再現する）
-- **iPad 縦持ち / スマホ**: カラムが段組み or タブ的に畳まれるレスポンシブ挙動
-- **キーボードショートカット**（iPad 外付けキーボード）: 問題送り / 1〜4 で選択肢 / 上下でフォーカス — Stimulus で実装
-- **ポインタ対応**: 選択肢は hover で軽い lift + highlight
-
-## 画面 × 純正アプリ マッピング
-
-| Que の画面 | 参照する純正アプリ | 転用する要素 |
-|---|---|---|
-| Today ダッシュボード | Apple News+ × Fitness | フルブリード Featured + Daily Ring |
-| 資格選択 / コース一覧 | Apple Books | 横スクロールシェルフ + カバー主体カード |
-| セクション / レッスン一覧 | Apple Podcasts | エピソードカード + 進捗バー + 状態バッジ |
-| 問題演習（集中） | Journal | 余白最大 + 問題文中央配置 + ツールバー最小 |
-| 学習サマリー・弱点 | Fitness | リング + ストリーク |
-| Playground（基本情報 科目B） | Swift Playgrounds | 左エディタ / 右結果 / 実行ボタン |
+- easing は `--ease-standard`。CSS transition / Turbo のページ遷移で表現。
+- **Reduced Motion 必須対応**（CSS で定義済み）。
+- 不正解時に shake / 揺れは出さない（Safe Failure Design）。
 
 ## コピーライティング（日本語）
 
-**アスピレーショナル形（願望・呼びかけ・提案）で統一。** 断言形・押し付け・煽りは禁止。
+**アスピレーショナル形（願望・呼びかけ・提案）で統一。** 断言形・押し付け・煽り・割引マーケコピーは禁止。
 
-- OK: 「今日の3問が届きました」「もう少し続けてみよう」「7日続いています」「合格に近づいています」
-- NG: 「私は毎日学ぶ人だ」（断言形）/「ストリークが消えそう！」（恐怖煽り）/「今すぐ学習しないと損する」（FOMO）
-- Tone: 「スタバで一緒に勉強しよう」的な仲間感。一人称は使わない。感嘆符は 1 コピー最大 1 個。絵文字は使わない
+- OK: 「学習を始める」「もう少し続けてみよう」「7日続いています」「合格に近づいています」
+- NG: 「ストリークが消えそう！」（恐怖煽り）/「87% OFF・残り1日」（FOMO・割引）/「今すぐ買わないと損」（FOMO）
+- 感嘆符は 1 コピー最大 1 個。絵文字は UI chrome に使わない。
 
-## ストリーク・インセンティブ哲学（譲れないライン）
+## コマース表現（定額制プロダクトとしての制約）
 
-- **Mastery-anchored で計測** — ストリークは**正答数**で計測。レッスン起動回数・アプリ open 回数では計測しない
-- **継続中はストリークを大きく見せない**。終了時にだけ自己ベスト更新を称える（Apple Fitness 流）
-- **休息日 Pause を最初から無料提供**。Streak Freeze は手動消費がデフォルト、自動消費時は事後通知で透明化
-- **煽り通知禁止** — 「ストリークが消えそう！」型は絶対に作らない
-- **Calm Mode を初期から構造的に持つ** — 試験前にリング・通知・バッジ・演出を全 off にできる
+Qu は月額 ¥980 の定額制。Udemy 風の見た目を再現する際も次は**作らない**:
+
+- ❌ カート / 単品コース価格（¥1,300 等）/ 取り消し線価格 / 割引率（87% OFF）
+- ❌ クーポン・ギフト・「残り◯日」等の購入を急かす表示
+- 代わりに「サブスクリプションに含まれています」「学習を始める」で表現する。
+
+## ストリーク・インセンティブ哲学
+
+- ストリークは**正答数**で計測（Mastery-anchored）。アプリ open 回数では計測しない。
+- 煽り通知は作らない。休息日 Pause を無料提供。
+- **Calm Mode** — リング・通知・演出を全 off にできる。
 
 ## してはいけないこと（アンチパターン）
 
-- ❌ React / SPA フレームワークやそのコンポーネント群を持ち込む（Hotwire 構成と戦う）
+- ❌ React コンポーネントライブラリ／SPA フレームワークの持ち込み
+- ❌ view 内のインライン `<script>`（Stimulus を使う）
 - ❌ Material Symbols 以外のアイコンセット
-- ❌ 装飾的な影・グラデーション・枠線
-- ❌ Duolingo 風のキャラクター・イラスト主導デザイン
-- ❌ Udemy 風の情報密度（サイドバー詰込み・多数アクション同時表示）
-- ❌ スタディサプリ風の「教育サービス感」（青×白の硬いトンマナ）
-- ❌ 固定カラー値の直書き（セマンティックトークンを経由する）
-- ❌ 時刻連動の背景色変化（`prefers-color-scheme` を尊重）
-- ❌ 学習プロセスの公開 SNS シェア強要（合格結果のシェアは OK）
-- ❌ 不正解時の shake / 揺れアニメ
-- ❌ 進捗バーの後退（Safe Failure Design）
-- ❌ 匿名ソーシャルグループ・自動マッチング（招待制のみ）
-- ❌ 「200-300% 改善」等の数値マーケコピー（景品表示法リスク）
+- ❌ 固定カラー値の直書き（セマンティックトークンを経由）
+- ❌ 時刻・OS 連動の配色切替（light 一本）
+- ❌ glass-on-glass の重ね置き／問題文・解説の背後の半透明素材
+- ❌ 単品販売型コマース（カート・割引・FOMO）— Qu は定額制
+- ❌ 不正解時の shake / 揺れアニメ、進捗バーの後退
+- ❌ 煽り・FOMO・断言形コピー、数値マーケコピー（景品表示法リスク）
 
 ## 倫理ルーブリック
 
-新機能・新コピーの実装前に `humane-tech-rubric.md` の Four Promises 採点シートを通す。
-13 点未満は PR レビューで差し戻し or 設計再考。
+新機能・新コピーの実装前に `humane-tech-rubric.md` の Four Promises 採点シートを通す。13 点未満は差し戻し。
 
 ## 主要参照
 
-- [HIG Foundations](https://developer.apple.com/design/human-interface-guidelines/foundations)
-- [Designing for iPadOS](https://developer.apple.com/design/human-interface-guidelines/designing-for-ipados)
-- [NN/g — Liquid Glass](https://www.nngroup.com/articles/liquid-glass/)
+- Stitch モック: `stitch_udemy_design_system`（`qu_2` ログイン / `qu_brand_blue` マイラーニング / `qu_it_brand_blue` コース詳細 / `qu_ai_brand_blue` レッスンプレーヤー / `qu_1` カタログ）
+- デザイントークン: `qu-rails/app/assets/stylesheets/application.tailwind.css`
+- Stitch 向け短縮版: `.stitch/DESIGN.md`
+- [humane-tech-rubric.md](humane-tech-rubric.md)

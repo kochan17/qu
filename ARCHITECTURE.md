@@ -1,14 +1,14 @@
-# Architecture — Que monorepo
+# Architecture — Qu monorepo
 
 モノレポ。主プロダクトは `qu-rails`。他はそれを支える周辺サービス・資産。
-プロジェクト概要は `CLAUDE.md`、Expo→Rails 移行の経緯は `.dev/移行計画_Railsピボット_Que.md`。
+プロジェクト概要は `CLAUDE.md`、Expo→Rails 移行の経緯は `.dev/移行計画_Railsピボット_Qu.md`。
 
 ## パッケージ
 
 | ディレクトリ | 役割 | 技術 | 状態 |
 |---|---|---|---|
 | `qu-rails/` | 学習者 UI + Admin LMS。**プロダクト本体** | Rails 8 + Hotwire | 稼働中（Render） |
-| `qu-site/` | ランディングページ（marketing） | Astro | 別運用 |
+| `qu-site/` | ランディングページ（marketing） | Next.js 16 + Tailwind v4 + Framer Motion | qu-pass.com（予定） |
 | `renderer/` | 動画レッスンのレンダラ | Hono + Remotion（Node） | qu-rails から HTTP 起動（Block D で連携） |
 | `content/` | 学習コンテンツ原稿（Markdown） | — | qu-rails の seed ソース |
 | `e2e/` | ブラウザ E2E テスト | Playwright | |
@@ -43,7 +43,7 @@
 
 - **qu-rails** — Rails 8 標準 Dockerfile で Docker ビルド → **Render**。`main` への push で自動デプロイ。
   起動時に entrypoint が `db:prepare` → `db:seed` を実行。
-- **qu-site** — Astro（デプロイ先未定）。
+- **qu-site** — Next.js 16（App Router）+ Tailwind v4 + Framer Motion。**Vercel** にデプロイ予定（ドメイン: `qu-pass.com`）。
 - パッケージ間に共有ビルド依存はない（各々独立してビルドする）。
 
 ## 外部サービス

@@ -1,4 +1,4 @@
-# Que E2E Tests
+# Qu E2E Tests
 
 Playwright を使った E2E テスト。`que-app` とは依存を分離した独立パッケージ。
 

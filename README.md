@@ -1,6 +1,6 @@
-# Que — URI 設計（MVP）
+# Qu — URI 設計（MVP）
 
-> Que のすべての URI（Path）をここに集約する。
+> Qu のすべての URI（Path）をここに集約する。
 > Expo Router file-based routing と 1:1 対応。**MVP に必要な URI だけ**を載せる。
 > 命名方針: REST 流（複数形リソース指向）/ kebab-case / 動詞は使わない。
 > 凡例: ✅ 実装済 / 🟡 部分実装 / 🟠 計画中（未着手）

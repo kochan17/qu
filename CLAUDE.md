@@ -1,6 +1,6 @@
-# Que — iPad 中心の資格学習サブスク
+# Qu — iPad 中心の資格学習サブスク
 
-**「Apple が資格学習アプリを作ったらこうなる」** を唯一のデザイン基準にする、iPad / タブレット中心の資格学習サブスク。月額 ¥980。**Rails 8 + Hotwire** の Web アプリとして実装し、iOS は **Hotwire Native** で App Store にも出す。
+**Material 3 ベースのブルーのデザインシステム**（Stitch モック準拠）を基準にする、iPad / タブレット中心の資格学習サブスク。月額 ¥980。**Rails 8 + Hotwire** の Web アプリとして実装し、iOS は **Hotwire Native** で App Store にも出す。
 
 ## ⚠️ 移行ステータス（最重要・最初に読む）
 
@@ -8,7 +8,7 @@
 
 - **現行アプリ = `qu-rails/`**（Rails 8）。**新規作業はすべてここ。** 本番稼働: https://qu-ez4q.onrender.com
 - **レガシー（撤去予定・参照も流用もしない）**: `qu-app/`（旧 Expo）/ `shikaq-app-legacy/` / `supabase/` / `maestro/`
-- 移行計画: `.dev/移行計画_Railsピボット_Que.md` ／ DB 設計: `.dev/設計書_DBスキーマ_Que.md`
+- 移行計画: `.dev/移行計画_Railsピボット_Qu.md` ／ DB 設計: `.dev/設計書_DBスキーマ_Qu.md`
 
 ## See Also
 
@@ -17,6 +17,7 @@
 - デザイン原則: `.claude/rules/design-principles.md`
 - DB スキーマ: `.claude/rules/db-schema.md`
 - 倫理ルーブリック: `.claude/rules/humane-tech-rubric.md`（新機能・新コピーは PR レビュー時に通す）
+- **セキュリティ境界（AI 含む全エージェント遵守）**: `.claude/rules/security-boundaries.md`
 - Phase 1 確定仕様: `.dev/quiet_streak_lite_v4.md`（学習ループの North Star）
 
 ## ターゲットユーザー
@@ -43,7 +44,7 @@ Ruby 3.4 / Rails 8.1 / Hotwire（Turbo + Stimulus）/ Tailwind CSS v4 / esbuild 
 ```
 qu/
 ├── qu-rails/   # Rails 8 アプリ本体（学習者 UI + Admin LMS）← 新規作業はここ
-├── qu-site/    # ランディングページ（Astro）
+├── qu-site/    # ランディングページ（Next.js 16 + Tailwind v4 + Framer Motion）
 ├── renderer/   # 動画レッスンのレンダラ（Hono + Remotion、別 Node サービス）
 ├── content/    # 学習コンテンツ原稿（Markdown、seed のソース）
 ├── e2e/        # ブラウザ E2E（Playwright）
@@ -63,12 +64,12 @@ bin/dev                     # Rails + Tailwind watch + esbuild watch
 bin/rails db:seed           # サンプル教材を再投入（冪等）
 ```
 
-開発ユーザー（seed 投入）: `user@que.test` / `admin@que.test`（いずれも password `password`）。
+開発ユーザー（seed 投入）: `user@que.test` / `admin@que.test`（いずれも password `password1234`）。
 `main` への push で Render に自動デプロイ。
 
 ## コンテンツ運用（アプリ内 Admin LMS）
 
-Que は**アプリ内に運営者向け admin ページを持つシンプルな LMS**。外部 CMS は使わない。
+Qu は**アプリ内に運営者向け admin ページを持つシンプルな LMS**。外部 CMS は使わない。
 
 ```
 admin ロールのユーザーがログイン → Admin メニューから:
@@ -85,7 +86,7 @@ admin ロールのユーザーがログイン → Admin メニューから:
 - **認可** — Pundit（自分のデータ / 公開コンテンツ / admin 限定）。`app/policies/`
 - **DB** — 単一 PostgreSQL。bigint 主キー。enum は string + CHECK 制約。詳細は `.claude/rules/db-schema.md`
 - **フロント** — Hotwire（Turbo / Stimulus）。React 等の SPA フレームワークは持ち込まない
-- **デザイン** — `.claude/rules/design-principles.md`（Apple 品質の Web、引き算）
+- **デザイン** — `.claude/rules/design-principles.md`（Material 3 ベースのブルー・Stitch モック準拠、tokens + 仕様を ERB/Tailwind で再現、light 一本）
 - **アイコン** — Material Symbols のみ。他のアイコンセット禁止
 - **コピー（日本語）** — アスピレーショナル形のみ。断言形・煽り・FOMO 禁止
 - **ストリーク** — Mastery-anchored（正答数で計測。レッスン起動回数では計測しない）
@@ -101,6 +102,6 @@ admin ロールのユーザーがログイン → Admin メニューから:
 | 認証 gem（Devise 等）の追加 | Rails 8 に標準認証がある | `bin/rails generate authentication` |
 | cross-model 副作用を持つ model callback | 追えない副作用 | コントローラ / サービス |
 | 固定深さ階層の自己参照ツリー化 | 過剰設計 | 別テーブル + 外部キー |
-| 装飾的な影・グラデーション・枠線 | Apple 品質から外れる | 余白と階層で表現 |
+| React コンポーネントライブラリ / 非商用ライセンスのアイコンセットの使用 | Hotwire 構成・商用ライセンスと不適合 | tokens + 仕様を ERB/Tailwind 再現、アイコンは Material Symbols Outlined |
 | 煽り・FOMO・断言形コピー | 倫理ルーブリック違反 | アスピレーショナル形 |
 | レガシー（`qu-app` 等）のコード流用 | 移行で撤去する | `qu-rails` で作り直す |
