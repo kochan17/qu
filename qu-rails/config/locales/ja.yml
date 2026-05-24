@@ -57,3 +57,26 @@ ja:
       default: "%Y/%m/%d %H:%M:%S"
       long: "%Y年%-m月%-d日 %H:%M"
       short: "%-m月%-d日 %H:%M"
+  # Rails 標準バリデーションエラーの日本語化（rails-i18n gem を入れる前の最小セット）。
+  # ここに無いキーが必要になったら、英語の messages を引いて 1 つずつ追記する。
+  errors:
+    format: "%{attribute}%{message}"
+    messages:
+      blank: "を入力してください"
+      taken: "は既に使用されています"
+      invalid: "は不正な値です"
+      too_short: "は%{count}文字以上で入力してください"
+      too_long: "は%{count}文字以下で入力してください"
+      confirmation: "と確認入力が一致しません"
+      inclusion: "は一覧にありません"
+      exclusion: "は予約されています"
+      accepted: "を承諾してください"
+      present: "は入力しないでください"
+      record_invalid: "バリデーションに失敗しました: %{errors}"
+  activerecord:
+    errors:
+      messages:
+        record_invalid: "バリデーションに失敗しました: %{errors}"
+        restrict_dependent_destroy:
+          has_one: "%{record}が存在しているので削除できません"
+          has_many: "%{record}が存在しているので削除できません"

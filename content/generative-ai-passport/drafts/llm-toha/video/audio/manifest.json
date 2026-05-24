@@ -1,0 +1,19 @@
+{
+  "lesson_slug": "llm-toha",
+  "tts": {
+    "provider": "elevenlabs",
+    "model": "eleven_multilingual_v2",
+    "voice_id": "RBnMinrYKeccY3vaUxlZ",
+    "voice_name": "Sakura - Narrational"
+  },
+  "sections": [
+    {
+      "id": 1,
+      "title": "つかみ",
+      "file": "section-1.mp3",
+      "duration_s": 36.388,
+      "char_count": 170,
+      "generated_at": "2026-05-23T16:56:00+09:00"
+    }
+  ]
+}
