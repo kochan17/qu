@@ -1,0 +1,78 @@
+name: Test
+
+# qu-rails の Minitest を実行する CI ジョブ。
+# - GitHub Actions は monorepo ルートの .github/workflows/ しか読まないため、
+#   working-directory: qu-rails でサブディレクトリを対象にする。
+# - bin/rails test の「ディレクトリ単位実行が稀にハングする」問題への保険として、
+#   1 ファイルずつ実行して結果を集約する。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: minitest
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: qu-rails
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: qu_test
+        ports:
+          - 5432:5432
+        # 接続できるようになるまで待つ
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/qu_test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version-file: qu-rails/.ruby-version
+          bundler-cache: true
+          working-directory: qu-rails
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: qu-rails/package-lock.json
+
+      - name: Install npm packages
+        run: npm ci
+
+      - name: Prepare test database
+        run: bin/rails db:test:prepare
+
+      - name: Run Minitest (1 file per process)
+        # ディレクトリ単位 `bin/rails test test/foo/` でハングする現象の保険として
+        # 各ファイルを個別実行する。1 件でも失敗があれば exit 1 で fail。
+        run: |
+          set +e
+          fail=0
+          for f in $(find test -type f -name "*_test.rb" | sort); do
+            echo "==> $f"
+            bin/rails test "$f"
+            if [ $? -ne 0 ]; then
+              fail=1
+            fi
+          done
+          exit $fail

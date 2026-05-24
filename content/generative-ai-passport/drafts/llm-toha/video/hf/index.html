@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #faf8ff;
+        font-family: "Noto Sans JP", "Inter", "Public Sans", sans-serif;
+        color: #191b23;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* === Shared chrome === */
+      .chrome-top {
+        position: absolute;
+        top: 56px;
+        left: 96px;
+        right: 96px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 28px;
+        color: #434654;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+      }
+      .chrome-top .pill {
+        background: #0052cc;
+        color: #ffffff;
+        padding: 6px 18px;
+        border-radius: 999px;
+        font-size: 22px;
+        letter-spacing: 0.08em;
+      }
+      .chrome-bottom {
+        position: absolute;
+        bottom: 56px;
+        left: 96px;
+        right: 96px;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        font-size: 24px;
+        color: #737685;
+        font-weight: 500;
+      }
+
+      /* === Scenes === */
+      .scene {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 200px 160px;
+        gap: 32px;
+        text-align: center;
+      }
+
+      /* Scene 1: Title card */
+      #scene-1 .lesson-meta {
+        font-size: 36px;
+        color: #0052cc;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+      }
+      #scene-1 .lesson-title {
+        font-size: 240px;
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        color: #191b23;
+        line-height: 1;
+      }
+      #scene-1 .lesson-subtitle {
+        font-size: 44px;
+        color: #434654;
+        font-weight: 500;
+        max-width: 1400px;
+        line-height: 1.5;
+        margin-top: 24px;
+      }
+
+      /* Scene 2: Hook */
+      #scene-2 .kicker {
+        font-size: 48px;
+        color: #434654;
+        font-weight: 500;
+        line-height: 1.4;
+      }
+      #scene-2 .keyword-big {
+        font-size: 360px;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        color: #0052cc;
+        line-height: 1;
+        font-family: "Public Sans", "Inter", sans-serif;
+      }
+
+      /* Scene 3: Definition */
+      #scene-3 .expansion {
+        font-size: 56px;
+        color: #434654;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        font-family: "Public Sans", "Inter", sans-serif;
+      }
+      #scene-3 .ja-title {
+        font-size: 152px;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        color: #191b23;
+        line-height: 1.1;
+        margin-bottom: 32px;
+      }
+      #scene-3 .learn-list {
+        list-style: none;
+        font-size: 40px;
+        color: #434654;
+        line-height: 1.7;
+        font-weight: 500;
+        margin-top: 24px;
+      }
+      #scene-3 .learn-list li::before {
+        content: "→ ";
+        color: #0052cc;
+        font-weight: 700;
+        margin-right: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="36.5" data-width="1920" data-height="1080">
+      <!-- Narration audio (section 1) -->
+      <audio id="audio-1" src="audio/section-1.mp3" data-start="0" data-duration="36.4" data-track-index="2" data-volume="1"></audio>
+
+      <!-- ============================================ -->
+      <!-- Scene 1: Title card (0-8s)                   -->
+      <!-- ============================================ -->
+      <div id="scene-1" class="scene clip" data-start="0" data-duration="8" data-track-index="0">&lt;div class="lesson-meta" data-hf-text-key="child:0:div" style="opacity: 0; transform: translate(0px, 30px); font-size: 33px"&gt;LESSON 01&lt;/div&gt;&lt;div class="lesson-title" data-hf-text-key="child:1:div" style="opacity: 0; transform: translate(0px, 80px)"&gt;LLMとは&lt;/div&gt;&lt;div class="lesson-subtitle" data-hf-text-key="child:2:div" style="opacity: 0; transform: translate(0px, 40px)"&gt;
+          生成AI の中核となる「大規模言語モデル」を理解する
+        &lt;/div&gt;</div>
+
+      <!-- ============================================ -->
+      <!-- Scene 2: Hook — "what's behind ChatGPT" (8-22s) -->
+      <!-- ============================================ -->
+      <div id="scene-2" class="scene clip" data-start="8" data-duration="14" data-track-index="0">
+        <div class="chrome-top">
+          <span class="pill">Qu</span>
+          <span>生成AIパスポート / Lesson 1</span>
+        </div>
+        <div class="kicker">ChatGPT の裏側で動いている技術</div>
+        <div class="keyword-big">LLM</div>
+        <div class="chrome-bottom">
+          <span>1 / 8</span>
+          <span>つかみ</span>
+        </div>
+      </div>
+
+      <!-- ============================================ -->
+      <!-- Scene 3: Definition expansion (22-36.5s)     -->
+      <!-- ============================================ -->
+      <div id="scene-3" class="scene clip" data-start="22" data-duration="14.5" data-track-index="0">
+        <div class="chrome-top">
+          <span class="pill">Qu</span>
+          <span>生成AIパスポート / Lesson 1</span>
+        </div>
+        <div class="expansion">Large Language Model</div>
+        <div class="ja-title">大規模言語モデル</div>
+        <ul class="learn-list">
+          <li>何ができるのか</li>
+          <li>何が苦手なのか</li>
+          <li>自分の言葉で説明できるところまで</li>
+        </ul>
+        <div class="chrome-bottom">
+          <span>1 / 8</span>
+          <span>つかみ</span>
+        </div>
+      </div>
+
+      <script>
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true });
+
+        // =========================
+        // Scene 1: Title card entrance (0.3s onset)
+        // =========================
+        tl.from("#scene-1 .chrome-top", { y: -20, opacity: 0, duration: 0.5, ease: "power2.out" }, 0.3);
+        tl.from("#scene-1 .lesson-meta", { y: 30, opacity: 0, duration: 0.5, ease: "power2.out" }, 0.6);
+        tl.from("#scene-1 .lesson-title", { y: 80, opacity: 0, duration: 0.9, ease: "power3.out" }, 0.8);
+        tl.from("#scene-1 .lesson-subtitle", { y: 40, opacity: 0, duration: 0.7, ease: "power3.out" }, 1.2);
+        tl.from("#scene-1 .chrome-bottom", { y: 20, opacity: 0, duration: 0.5, ease: "power2.out" }, 1.5);
+
+        // =========================
+        // Scene 2: Hook entrance (8.3s onset)
+        // =========================
+        tl.from("#scene-2 .chrome-top", { y: -20, opacity: 0, duration: 0.5, ease: "power2.out" }, 8.3);
+        tl.from("#scene-2 .kicker", { y: 40, opacity: 0, duration: 0.7, ease: "power3.out" }, 8.5);
+        tl.from("#scene-2 .keyword-big", { scale: 0.7, opacity: 0, duration: 0.9, ease: "back.out(1.4)" }, 8.9);
+        tl.from("#scene-2 .chrome-bottom", { y: 20, opacity: 0, duration: 0.5, ease: "power2.out" }, 9.3);
+
+        // =========================
+        // Scene 3: Definition expansion entrance (22.3s onset)
+        // =========================
+        tl.from("#scene-3 .chrome-top", { y: -20, opacity: 0, duration: 0.5, ease: "power2.out" }, 22.3);
+        tl.from("#scene-3 .expansion", { y: 30, opacity: 0, duration: 0.5, ease: "power2.out" }, 22.5);
+        tl.from("#scene-3 .ja-title", { y: 60, opacity: 0, duration: 0.8, ease: "power3.out" }, 22.8);
+        tl.from(
+          "#scene-3 .learn-list li",
+          { x: -40, opacity: 0, duration: 0.5, ease: "power2.out", stagger: 0.18 },
+          23.6
+        );
+        tl.from("#scene-3 .chrome-bottom", { y: 20, opacity: 0, duration: 0.5, ease: "power2.out" }, 24.4);
+
+        // Final fade out (last scene only — allowed by HyperFrames rules)
+        tl.to("#scene-3 .ja-title", { opacity: 0, duration: 0.6, ease: "power2.in" }, 35.5);
+        tl.to("#scene-3 .expansion", { opacity: 0, duration: 0.5, ease: "power2.in" }, 35.6);
+        tl.to("#scene-3 .learn-list", { opacity: 0, duration: 0.5, ease: "power2.in" }, 35.7);
+
+        window.__timelines["main"] = tl;
+      </script>
+    </div>
+  </body>
+</html>

@@ -1,27 +1,37 @@
 Rails.application.routes.draw do
-  # ── 認証（Rails 8 標準ジェネレータ）──────────────────────────
-  resource  :session
-  resources :passwords, param: :token
-  resource  :registration, only: %i[ new create ]
+  resource :session, only: [ :new, :create, :destroy ]
 
-  # ── オンボーディング（資格選択 + 1 問プレビュー）─────────────
-  resource :onboarding, only: %i[ show update ], controller: "onboarding"
+  resources :passwords, only: [ :new, :create, :edit, :update ], param: :token
 
-  # ── 設定 ────────────────────────────────────────────────────
-  resource :settings, only: %i[ show update ], controller: "settings"
+  resource :registration, only: [ :new, :create ]
 
-  # ── 学習コンテンツ（Apple Books 風）──────────────────────────
-  resources :courses, only: %i[ index show ]
-  resources :lessons, only: %i[ show ] do
-    resource :completion, only: :create, controller: "lesson_completions"
+  resource :settings, only: [ :show, :update ], controller: "settings"
+
+  resource :otp,           only: %i[new create destroy], controller: "otps"
+  resource :otp_challenge, only: %i[new create],         controller: "otp_challenges"
+
+  resources :courses, only: [ :index, :show ]
+
+  resources :lessons, only: [ :show ] do
+    resource :completion, only: [ :create ], controller: "lesson_completions"
   end
 
-  # ── 演習（Practice）────────────────────────────────────────
-  # 既定は FSRS 由来の今日のキュー。?lesson_id= でレッスン単位の演習。
-  resource  :practice, only: :show, controller: "practice"
-  resources :quiz_results, only: :create
+  resource :practice, only: [ :show ], controller: "practice"
 
-  # ── インフラ ────────────────────────────────────────────────
+  resources :quiz_results, only: [ :create ]
+
+  # 運営者向けの閲覧専用ダッシュボード。コンテンツの作成・編集は `bin/rails content:import`
+  # でファイル（content/）から取り込むため、Admin に CRUD は持たせない。
+  namespace :admin do
+    root "dashboard#index"
+  end
+
+  # ハニーポット — 典型的なスキャナのプローブを記録する。常に 404 を返す。
+  %w[
+    /wp-admin /wp-login.php /xmlrpc.php /phpmyadmin
+    /admin.php /administrator /server-status
+  ].each { |path| get path, to: "honeypots#trip" }
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   root "dashboard#index"

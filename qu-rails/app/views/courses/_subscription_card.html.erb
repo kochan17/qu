@@ -1,0 +1,58 @@
+<%# Udemy のコース購入カードを、定額制（受け放題）向けに翻訳した訴求カード。 %>
+<div class="card overflow-hidden" style="box-shadow: var(--shadow-raised)">
+  <% if course.thumbnail_url.present? %>
+    <div class="aspect-video w-full overflow-hidden">
+      <img src="<%= course.thumbnail_url %>" alt="<%= course.title %>" class="h-full w-full object-cover">
+    </div>
+  <% else %>
+    <div class="flex aspect-video w-full items-center justify-center"
+         style="background-color: var(<%= cover_color_var %>)">
+      <%= icon("menu_book", filled: true, css: "text-5xl text-white opacity-80") %>
+    </div>
+  <% end %>
+
+  <div class="space-y-4 p-5 text-on-surface">
+    <div>
+      <p class="font-label text-xs font-semibold uppercase tracking-wide text-on-surface-variant">
+        月額プランに含まれています
+      </p>
+      <p class="font-headline text-lg font-bold">学び放題</p>
+    </div>
+
+    <% if first_lesson %>
+      <%= link_to lesson_path(first_lesson), class: "btn btn-primary btn-block btn-lg" do %>
+        <%= icon("play_arrow", filled: true, css: "text-xl") %>
+        <%= completed_lessons.positive? ? "学習を続ける" : "学習を始める" %>
+      <% end %>
+    <% end %>
+
+    <% if total_lessons.positive? %>
+      <div class="space-y-1.5">
+        <div class="h-2 overflow-hidden rounded-full bg-surface-container-high">
+          <div class="h-full rounded-full bg-brand-blue transition-all duration-700" style="width: <%= pct %>%"></div>
+        </div>
+        <p class="font-label text-xs tabular-nums text-on-surface-variant">
+          <span class="font-semibold text-on-surface"><%= completed_lessons %></span> / <%= total_lessons %> レッスン完了
+        </p>
+      </div>
+    <% end %>
+
+    <div class="space-y-2 border-t border-outline-variant pt-3">
+      <p class="font-label text-sm font-bold">このコースの内容</p>
+      <ul class="space-y-2 text-sm text-on-surface-variant">
+        <li class="flex items-center gap-2">
+          <%= icon("layers", css: "text-base") %><span><%= sections_count %>セクション</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <%= icon("play_lesson", css: "text-base") %><span><%= total_lessons %>レッスン</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <%= icon("quiz", css: "text-base") %><span>演習問題つき</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <%= icon("all_inclusive", css: "text-base") %><span>月額プランで何度でも学べる</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

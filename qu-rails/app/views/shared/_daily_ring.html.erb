@@ -9,17 +9,23 @@
 
 <div class="relative flex-shrink-0" style="width: <%= size %>px; height: <%= size %>px;">
   <svg viewBox="0 0 <%= size %> <%= size %>" class="-rotate-90" aria-hidden="true">
+    <%# トラック（背景の薄い円）%>
     <circle cx="<%= size / 2 %>" cy="<%= size / 2 %>" r="<%= radius %>"
-            fill="none" stroke-width="<%= stroke %>" class="stroke-surface-sunken" />
+            fill="none" stroke-width="<%= stroke %>"
+            style="stroke: var(--color-surface-container-high)" />
+    <%# 進捗弧 — stroke-dashoffset で進捗を表現 %>
     <circle cx="<%= size / 2 %>" cy="<%= size / 2 %>" r="<%= radius %>"
             fill="none" stroke-width="<%= stroke %>" stroke-linecap="round"
             stroke-dasharray="<%= circ %>" stroke-dashoffset="<%= offset %>"
-            class="stroke-tint transition-all duration-700 ease-out" />
+            style="stroke: var(--color-primary); transition: stroke-dashoffset 0.7s var(--ease-standard)" />
   </svg>
   <div class="absolute inset-0 flex flex-col items-center justify-center">
-    <span class="text-4xl font-semibold leading-none tabular-nums text-content">
+    <span class="font-bold leading-none tabular-nums"
+          style="font-family: var(--font-headline); color: var(--color-on-surface); font-size: <%= (size * 0.27).round %>px">
       <%= activity.core_done %>
     </span>
-    <span class="mt-1 text-xs text-content-faint">/ <%= activity.core_goal %> 問</span>
+    <span class="mt-1" style="color: var(--color-on-surface-variant); font-size: <%= (size * 0.09).round %>px">
+      / <%= activity.core_goal %> 問
+    </span>
   </div>
 </div>

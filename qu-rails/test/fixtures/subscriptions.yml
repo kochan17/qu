@@ -1,0 +1,14 @@
+general_sub:
+  user: general
+  status: active
+  source: stripe
+
+admin_sub:
+  user: admin
+  status: active
+  source: stripe
+
+admin_otp_sub:
+  user: admin_with_otp
+  status: active
+  source: stripe

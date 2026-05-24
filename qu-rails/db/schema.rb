@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_22_040000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_23_040001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -42,6 +42,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_040000) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "audit_logs", force: :cascade do |t|
+    t.string "action", null: false
+    t.datetime "created_at", null: false
+    t.string "ip_address"
+    t.jsonb "payload", default: {}, null: false
+    t.bigint "resource_id"
+    t.string "resource_type"
+    t.string "user_agent"
+    t.bigint "user_id"
+    t.index ["action", "created_at"], name: "index_audit_logs_on_action_and_created_at"
+    t.index ["resource_type", "resource_id"], name: "index_audit_logs_on_resource_type_and_resource_id"
+    t.index ["user_id"], name: "index_audit_logs_on_user_id"
+  end
+
   create_table "certifications", force: :cascade do |t|
     t.string "category", null: false
     t.datetime "created_at", null: false
@@ -69,9 +83,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_040000) do
   end
 
   create_table "daily_activities", force: :cascade do |t|
-    t.integer "audio_count", default: 0, null: false
-    t.integer "audio_goal", default: 1, null: false
-    t.virtual "completed", type: :boolean, as: "(((recall_count + learn_count) >= (recall_goal + learn_goal)) AND (audio_count >= audio_goal))", stored: true
+    t.virtual "completed", type: :boolean, as: "((recall_count + learn_count) >= (recall_goal + learn_goal))", stored: true
     t.datetime "created_at", null: false
     t.date "date", null: false
     t.integer "learn_count", default: 0, null: false
@@ -113,20 +125,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_040000) do
     t.check_constraint "content_type::text = ANY (ARRAY['video'::character varying, 'text'::character varying, 'audio'::character varying, 'quiz'::character varying]::text[])", name: "chk_lessons_content_type"
     t.check_constraint "intro IS NULL OR char_length(intro) <= 200", name: "chk_lessons_intro_length"
     t.check_constraint "why_matters IS NULL OR char_length(why_matters) <= 200", name: "chk_lessons_why_matters_length"
-  end
-
-  create_table "notifications", force: :cascade do |t|
-    t.text "body"
-    t.datetime "created_at", null: false
-    t.string "kind", null: false
-    t.string "link"
-    t.datetime "read_at"
-    t.string "title", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["user_id", "created_at"], name: "index_notifications_on_user_id_and_created_at"
-    t.index ["user_id"], name: "index_notifications_on_user_id"
-    t.check_constraint "kind::text = ANY (ARRAY['streak'::character varying, 'reminder'::character varying, 'system'::character varying, 'subscription'::character varying]::text[])", name: "chk_notifications_kind"
   end
 
   create_table "question_review_states", force: :cascade do |t|
@@ -174,18 +172,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_040000) do
     t.index ["question_id"], name: "index_quiz_results_on_question_id"
     t.index ["user_id", "answered_at"], name: "index_quiz_results_on_user_id_and_answered_at", order: { answered_at: :desc }
     t.index ["user_id"], name: "index_quiz_results_on_user_id"
-  end
-
-  create_table "section_masteries", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.float "score", default: 0.0, null: false
-    t.bigint "section_id", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["section_id"], name: "index_section_masteries_on_section_id"
-    t.index ["user_id", "section_id"], name: "index_section_masteries_on_user_id_and_section_id", unique: true
-    t.index ["user_id"], name: "index_section_masteries_on_user_id"
-    t.check_constraint "score >= 0.0::double precision AND score <= 1.0::double precision", name: "chk_section_masteries_score"
   end
 
   create_table "sections", force: :cascade do |t|
@@ -365,7 +351,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_040000) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "avatar_url"
     t.boolean "calm_mode", default: false, null: false
     t.date "calm_mode_until"
     t.datetime "created_at", null: false
@@ -373,9 +358,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_040000) do
     t.string "display_name"
     t.string "email_address", null: false
     t.boolean "evening_notification_enabled", default: false, null: false
+    t.integer "failed_login_count", default: 0, null: false
     t.date "last_active_date"
+    t.datetime "locked_until"
     t.integer "longest_streak", default: 0, null: false
     t.boolean "morning_notification_enabled", default: true, null: false
+    t.jsonb "otp_backup_codes_digests", default: [], null: false
+    t.boolean "otp_enabled", default: false, null: false
+    t.string "otp_secret"
     t.string "password_digest", null: false
     t.date "paused_until"
     t.string "preferred_certification"
@@ -389,19 +379,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_22_040000) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "audit_logs", "users"
   add_foreign_key "courses", "certifications"
   add_foreign_key "daily_activities", "users"
   add_foreign_key "lesson_completions", "lessons"
   add_foreign_key "lesson_completions", "users"
   add_foreign_key "lessons", "sections"
-  add_foreign_key "notifications", "users"
   add_foreign_key "question_review_states", "questions"
   add_foreign_key "question_review_states", "users"
   add_foreign_key "questions", "lessons"
   add_foreign_key "quiz_results", "questions"
   add_foreign_key "quiz_results", "users"
-  add_foreign_key "section_masteries", "sections"
-  add_foreign_key "section_masteries", "users"
   add_foreign_key "sections", "courses"
   add_foreign_key "sessions", "users"
   add_foreign_key "solid_queue_blocked_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade

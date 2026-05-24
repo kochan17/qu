@@ -1,80 +1,306 @@
-<%# レッスン詳細 — Apple Journal 風、余白最大で本文に集中できる構成。 %>
+<%# 学習プレーヤー — chrome なし独自シェル。共通ヘッダー/フッターは出ない。 %>
 <% content_for :title, @lesson.title %>
 
-<div class="mx-auto max-w-2xl space-y-8">
-
-  <%# ── 戻るリンク ──────────────────────────────────────────── %>
-  <%= link_to course_path(@course),
-        class: "inline-flex items-center gap-1 text-sm text-tint transition-colors hover:text-tint-strong" do %>
-    <%= icon("arrow_back_ios", css: "text-base") %>
-    <span><%= @course.title %></span>
-  <% end %>
-
-  <%# ── ヘッダ ──────────────────────────────────────────────── %>
-  <header class="space-y-3">
-    <%# セクション名 %>
-    <p class="text-xs font-medium uppercase tracking-wider text-content-faint"><%= @section.title %></p>
-
-    <h1 class="text-2xl font-semibold leading-snug tracking-tight text-content"><%= @lesson.title %></h1>
-
-    <% if @lesson.intro.present? %>
-      <p class="text-base leading-relaxed text-content-muted"><%= @lesson.intro %></p>
-    <% end %>
-
-    <%# 所要時間 %>
-    <% if @lesson.duration_seconds.present? && @lesson.duration_seconds > 0 %>
-      <p class="flex items-center gap-1 text-xs text-content-faint">
-        <%= icon("schedule", css: "text-base") %>
-        約<%= (@lesson.duration_seconds / 60.0).ceil %>分
-      </p>
-    <% end %>
-  </header>
-
-  <%# ── なぜ大切か（why_matters コールアウト）─────────────────── %>
-  <% if @lesson.why_matters.present? %>
-    <aside class="rounded-2xl bg-tint-soft px-5 py-4 space-y-1.5">
-      <p class="text-xs font-semibold text-tint">なぜ大切か</p>
-      <p class="text-sm leading-relaxed text-content"><%= @lesson.why_matters %></p>
-    </aside>
-  <% end %>
-
-  <%# ── レッスン本文 ────────────────────────────────────────── %>
-  <% if @lesson.body.present? %>
-    <div class="lesson-prose">
-      <%= render_markdown(@lesson.body) %>
+<%# トップナビ %>
+<header class="sticky top-0 z-50 bg-primary border-b border-white/20">
+  <div class="flex items-center justify-between w-full px-4 md:px-6 py-3 gap-4">
+    <div class="flex items-center gap-4 md:gap-8 min-w-0">
+      <%= link_to "Qu", root_path, class: "shrink-0 text-2xl font-black text-white font-headline" %>
+      <span class="hidden lg:block text-white font-bold font-label text-sm truncate max-w-xs">
+        <%= @course.title %>
+      </span>
     </div>
-  <% else %>
-    <div class="rounded-2xl border border-border-subtle bg-surface-elevated px-6 py-10 text-center">
-      <%= icon("auto_stories", css: "text-4xl text-content-faint") %>
-      <p class="mt-3 text-sm text-content-muted">本文を準備中です。</p>
-    </div>
-  <% end %>
 
-  <%# ── フッタアクション ───────────────────────────────────────── %>
-  <footer class="space-y-3 border-t border-border-subtle pt-6">
-
-    <%# 完了ボタン %>
-    <% if @completed %>
-      <div class="flex items-center gap-2 text-sm text-tint">
-        <%= icon("check_circle", filled: true, css: "text-xl") %>
-        <span>完了済み</span>
+    <div class="flex items-center gap-4 md:gap-6 shrink-0">
+      <div class="hidden md:flex items-center gap-2 bg-white/10 rounded-full px-3 py-1">
+        <% total = @course_sections.sum { |s| s.lessons.count { |l| l.published? } }
+           done  = @course_sections.sum { |s| s.lessons.count { |l| l.published? && @completed_lesson_ids.include?(l.id) } }
+           pct   = percent_of(done, total) %>
+        <%= icon("school", filled: true, css: "text-sm text-white") %>
+        <span class="text-xs text-white font-label">進捗 <%= pct %>%</span>
+        <div class="w-12 h-1.5 bg-white/20 rounded-full overflow-hidden">
+          <div class="h-full bg-white rounded-full" style="width: <%= pct %>%"></div>
+        </div>
       </div>
-    <% else %>
-      <%= button_to lesson_completion_path(@lesson), method: :post,
-            class: "w-full rounded-xl bg-tint px-5 py-3 text-sm font-medium text-on-tint transition-colors hover:bg-tint-strong" do %>
-        このレッスンを完了にする
+
+      <%= link_to root_path,
+            class: "font-label text-sm font-bold text-white hover:text-white/80 transition-colors hidden md:block",
+            "aria-label": "マイラーニング" do %>
+        マイラーニング
       <% end %>
+
+      <%= link_to settings_path,
+            class: "flex h-8 w-8 items-center justify-center rounded-full bg-white/20 border border-white/30 text-white",
+            "aria-label": "設定" do %>
+        <%= icon("person", filled: true, css: "text-base") %>
+      <% end %>
+    </div>
+  </div>
+</header>
+
+<%# メイン 2 ペイン %>
+<main class="flex flex-col lg:flex-row lg:h-[calc(100vh-56px)] overflow-hidden bg-inverse-surface">
+
+  <%# 左ペイン: コンテンツ領域 %>
+  <div class="flex-1 overflow-y-auto">
+
+    <%# コンテンツ本体（video / text / audio / quiz 分岐） %>
+    <% if @lesson.video? %>
+      <section class="relative aspect-video w-full bg-black">
+        <% if @lesson.respond_to?(:video_url) && @lesson.video_url.present? %>
+          <video src="<%= @lesson.video_url %>"
+                 class="w-full h-full object-cover"
+                 controls
+                 preload="metadata">
+          </video>
+        <% else %>
+          <%# 動画 URL 未設定時のプレースホルダー %>
+          <div class="absolute inset-0 flex flex-col items-center justify-center bg-inverse-surface">
+            <div class="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30">
+              <%= icon("play_arrow", filled: true, css: "text-5xl text-white") %>
+            </div>
+            <p class="mt-4 text-sm text-white/60 font-label">動画を準備中です</p>
+          </div>
+        <% end %>
+
+        <div class="absolute bottom-0 left-0 right-0 px-4 py-3 bg-primary/90 flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <%= icon("play_circle", css: "text-xl text-white") %>
+            <% if @lesson.duration_seconds.present? && @lesson.duration_seconds > 0 %>
+              <span class="text-white text-sm font-label">
+                0:00 / <%= format("%d:%02d", @lesson.duration_seconds / 60, @lesson.duration_seconds % 60) %>
+              </span>
+            <% end %>
+          </div>
+          <div class="flex items-center gap-3">
+            <%= icon("settings", css: "text-xl text-white") %>
+            <%= icon("fullscreen", css: "text-xl text-white") %>
+          </div>
+        </div>
+      </section>
+    <% elsif @lesson.audio? %>
+      <section class="bg-inverse-surface px-6 py-10 flex flex-col items-center gap-6">
+        <div class="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center border border-white/20">
+          <%= icon("headphones", filled: true, css: "text-5xl text-white") %>
+        </div>
+        <% if @lesson.audio.attached? %>
+          <%= audio_tag url_for(@lesson.audio),
+                class: "w-full max-w-md rounded-lg",
+                controls: true,
+                preload: "metadata" %>
+        <% else %>
+          <p class="text-sm text-white/60 font-label">音声を準備中です</p>
+        <% end %>
+      </section>
     <% end %>
 
-    <%# 演習ボタン — 公開問題がある時のみ表示 %>
-    <% if @has_questions %>
-      <%= link_to practice_path(lesson_id: @lesson.id),
-            class: "flex w-full items-center justify-center gap-2 rounded-xl border border-border-subtle px-5 py-3 text-sm font-medium text-content transition-colors hover:bg-surface-sunken" do %>
-        <%= icon("quiz", css: "text-xl text-content-muted") %>
-        このレッスンを演習する
+    <%# タブ領域: コンテンツがあるものだけ表示 %>
+    <section class="bg-surface px-4 md:px-8 py-6 min-h-screen"
+             data-controller="tabs">
+      <%# タブバー %>
+      <div class="flex gap-6 border-b border-outline-variant mb-8 overflow-x-auto"
+           style="-webkit-overflow-scrolling: touch; scrollbar-width: none;">
+        <button class="pb-4 text-sm font-bold whitespace-nowrap border-b-2
+                       data-[active]:border-primary data-[active]:text-on-surface
+                       border-transparent text-on-surface-variant hover:text-on-surface transition-colors"
+                data-tabs-target="tab"
+                data-action="tabs#select"
+                data-active>
+          概要
+        </button>
+        <% if @has_questions %>
+          <button class="pb-4 text-sm font-bold whitespace-nowrap border-b-2
+                         data-[active]:border-primary data-[active]:text-on-surface
+                         border-transparent text-on-surface-variant hover:text-on-surface transition-colors"
+                  data-tabs-target="tab"
+                  data-action="tabs#select">
+            演習
+          </button>
+        <% end %>
+      </div>
+
+      <%# 概要タブパネル %>
+      <div data-tabs-target="panel">
+        <div class="max-w-2xl space-y-8">
+
+          <%# レッスンヘッダー %>
+          <div>
+            <p class="font-label text-xs font-semibold uppercase tracking-widest text-on-surface-variant mb-2">
+              <%= @section.title %>
+            </p>
+            <h1 class="font-headline text-2xl font-bold leading-snug text-on-surface">
+              <%= @lesson.title %>
+            </h1>
+            <% if @lesson.intro.present? %>
+              <p class="mt-2 font-body text-base leading-relaxed text-on-surface-variant">
+                <%= @lesson.intro %>
+              </p>
+            <% end %>
+            <% if @lesson.duration_seconds.present? && @lesson.duration_seconds > 0 %>
+              <p class="mt-2 flex items-center gap-1 font-label text-xs text-on-surface-variant">
+                <%= icon("schedule", css: "text-base") %>
+                約<%= (@lesson.duration_seconds / 60.0).ceil %>分
+              </p>
+            <% end %>
+          </div>
+
+          <%# なぜ大切か %>
+          <% if @lesson.why_matters.present? %>
+            <aside class="rounded-xl border border-outline-variant bg-primary-fixed px-5 py-4 space-y-1.5">
+              <p class="font-label text-xs font-semibold text-primary">なぜ大切か</p>
+              <p class="font-body text-sm leading-relaxed text-on-surface">
+                <%= @lesson.why_matters %>
+              </p>
+            </aside>
+          <% end %>
+
+          <%# レッスン本文 %>
+          <% if @lesson.body.present? %>
+            <div class="lesson-prose">
+              <%= render_markdown(@lesson.body) %>
+            </div>
+          <% elsif !@lesson.video? && !@lesson.audio? %>
+            <div class="card px-6 py-12 text-center">
+              <%= icon("auto_stories", css: "text-4xl text-on-surface-variant") %>
+              <p class="mt-3 font-body text-sm text-on-surface-variant">本文を準備中です。</p>
+            </div>
+          <% end %>
+
+          <%# 完了アクション %>
+          <div class="pt-4 border-t border-outline-variant">
+            <% if @completed %>
+              <div class="flex items-center gap-2 font-label text-sm font-semibold text-secondary">
+                <%= icon("check_circle", filled: true, css: "text-xl") %>
+                <span>完了済み</span>
+              </div>
+            <% else %>
+              <%= button_to lesson_completion_path(@lesson), method: :post,
+                    class: "btn btn-primary" do %>
+                <%= icon("check_circle", css: "text-base") %>
+                このレッスンを完了にする
+              <% end %>
+            <% end %>
+          </div>
+
+        </div>
+      </div>
+
+      <%# 演習タブパネル %>
+      <% if @has_questions %>
+        <div data-tabs-target="panel" hidden>
+          <div class="max-w-2xl">
+            <p class="font-body text-base text-on-surface-variant mb-4">
+              このレッスンの理解度を確認しましょう。
+            </p>
+            <%= link_to practice_path(lesson_id: @lesson.id),
+                  class: "btn btn-primary" do %>
+              <%= icon("quiz", css: "text-base") %>
+              演習をはじめる
+            <% end %>
+          </div>
+        </div>
       <% end %>
-    <% end %>
 
-  </footer>
+    </section>
+  </div>
 
-</div>
+  <%# 右ペイン: コースの内容サイドバー %>
+  <aside class="w-full lg:w-[360px] xl:w-[400px] border-l border-outline-variant bg-surface-container-lowest flex flex-col
+                lg:h-full overflow-hidden">
+
+    <div class="px-4 py-3 border-b border-outline-variant bg-surface flex items-center justify-between shrink-0">
+      <h2 class="font-bold text-sm text-on-surface">コースの内容</h2>
+    </div>
+
+    <div class="flex-1 overflow-y-auto divide-y divide-outline-variant">
+      <% @course_sections.each_with_index do |section, si| %>
+        <% section_lessons = section.lessons.published.ordered
+           section_done    = section_lessons.count { |l| @completed_lesson_ids.include?(l.id) }
+           section_mins    = (section_lessons.sum { |l| l.duration_seconds.to_i }.to_f / 60).ceil
+           is_current_section = section.id == @section.id %>
+
+        <div data-controller="accordion"
+             data-accordion-open-value="<%= is_current_section %>">
+
+          <%# セクションヘッダー (トグル) %>
+          <button class="w-full flex items-center justify-between px-4 py-3.5 bg-surface-container text-left hover:bg-surface-container-high transition-colors"
+                  data-action="accordion#toggle"
+                  type="button">
+            <div class="min-w-0">
+              <p class="font-bold text-sm text-on-surface truncate">
+                <%= section.title %>
+              </p>
+              <p class="text-xs text-on-surface-variant mt-0.5">
+                <%= section_done %> / <%= section_lessons.size %>
+                <% if section_mins > 0 %>
+                  | <%= section_mins %>分
+                <% end %>
+              </p>
+            </div>
+            <span class="material-symbols-outlined shrink-0 text-xl text-on-surface-variant transition-transform"
+                  data-accordion-target="icon"
+                  aria-hidden="true">expand_more</span>
+          </button>
+
+          <%# レッスン一覧 %>
+          <div data-accordion-target="panel"
+               class="divide-y divide-outline-variant/30">
+            <% section_lessons.each do |lesson| %>
+              <% is_current   = lesson.id == @lesson.id
+                 is_completed = @completed_lesson_ids.include?(lesson.id)
+                 content_icon = lesson.video? ? "play_circle" : lesson.audio? ? "headphones" : "article" %>
+
+              <%= link_to lesson_path(lesson),
+                    class: [
+                      "flex items-start gap-3 px-4 py-3 transition-colors group",
+                      is_current ? "bg-primary/5 border-l-4 border-primary" : "hover:bg-surface-container-low border-l-4 border-transparent"
+                    ].join(" ") do %>
+
+                <% if is_completed %>
+                  <%= icon("check_box", filled: true, css: "mt-0.5 shrink-0 text-secondary text-xl") %>
+                <% else %>
+                  <%= icon("check_box_outline_blank", css: "mt-0.5 shrink-0 text-outline text-xl") %>
+                <% end %>
+
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm leading-snug <%= is_current ? 'font-bold text-on-surface' : 'text-on-surface group-hover:text-primary transition-colors' %>">
+                    <%= lesson.title %>
+                  </p>
+                  <div class="flex items-center gap-1.5 mt-1">
+                    <%= icon(content_icon, css: "text-sm text-on-surface-variant") %>
+                    <% if lesson.duration_seconds.present? && lesson.duration_seconds > 0 %>
+                      <span class="text-[11px] text-on-surface-variant font-label">
+                        <%= format("%d:%02d", lesson.duration_seconds / 60, lesson.duration_seconds % 60) %>
+                      </span>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+
+        </div>
+      <% end %>
+    </div>
+
+    <%# サイドバーフッター: 次のレクチャーへ %>
+    <div class="px-4 py-3 border-t border-outline-variant bg-surface shrink-0 space-y-2">
+      <% if @next_lesson %>
+        <%= link_to lesson_path(@next_lesson), class: "btn btn-primary btn-block" do %>
+          次のレクチャーへ
+          <%= icon("arrow_forward", css: "text-base") %>
+        <% end %>
+        <p class="text-center text-[10px] uppercase tracking-widest text-on-surface-variant font-label truncate">
+          次回: <%= @next_lesson.title %>
+        </p>
+      <% elsif @prev_lesson %>
+        <p class="text-center text-sm text-secondary font-label font-semibold py-2">
+          <%= icon("check_circle", filled: true, css: "text-base") %>
+          コースの最後のレッスンです
+        </p>
+      <% end %>
+    </div>
+
+  </aside>
+
+</main>

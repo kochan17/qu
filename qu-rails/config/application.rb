@@ -41,5 +41,12 @@ module QuRails
 
     config.i18n.default_locale = :ja
     config.i18n.load_path += Dir[Rails.root.join("config/locales/**/*.yml")]
+
+    # Pundit の `after_action :verify_authorized, except: :index` / `:verify_policy_scoped, only: :index` を
+    # 全 controller に適用しているため、`resources :lessons, only: :show` のように index を持たない
+    # controller でも :index を参照するコールバックが宣言される。
+    # Rails 7.1+ の missing-callback-actions チェックはこれを ActionNotFound として 404 にしてしまうので
+    # 無効化する。タイポ検知の安全網は失われるが、テストカバレッジで担保する。
+    config.action_controller.raise_on_missing_callback_actions = false
   end
 end

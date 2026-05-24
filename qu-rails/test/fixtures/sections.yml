@@ -1,0 +1,11 @@
+ip_strategy_company:
+  course: ip_strategy
+  title: 経営戦略
+  is_published: true
+  position: 0
+
+ip_strategy_law:
+  course: ip_strategy
+  title: 関連法規
+  is_published: true
+  position: 1

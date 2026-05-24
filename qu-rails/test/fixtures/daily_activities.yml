@@ -1,0 +1,7 @@
+general_today:
+  user: general
+  date: <%= Date.current %>
+  recall_count: 0
+  learn_count: 0
+  recall_goal: 3
+  learn_goal: 7

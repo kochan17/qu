@@ -1,0 +1,58 @@
+<% content_for :title, "ダッシュボード" %>
+
+<header class="mb-8">
+  <h1 class="font-headline text-2xl font-bold text-on-surface md:text-3xl">カリキュラム概況</h1>
+  <p class="mt-1 text-sm text-on-surface-variant">
+    コンテンツは <code class="rounded bg-surface-container-high px-1.5 py-0.5 font-label text-xs">content/</code> ディレクトリで編集し、<code class="rounded bg-surface-container-high px-1.5 py-0.5 font-label text-xs">bin/rails content:import</code> で DB に反映します。
+  </p>
+</header>
+
+<div class="mb-10 grid grid-cols-2 gap-4 md:grid-cols-5">
+  <% [
+       [ "資格", @counts[:certifications], "school" ],
+       [ "コース", @counts[:courses], "menu_book" ],
+       [ "セクション", @counts[:sections], "layers" ],
+       [ "レッスン", @counts[:lessons], "play_lesson" ],
+       [ "問題", @counts[:questions], "quiz" ]
+     ].each do |label, count, icon_name| %>
+    <div class="card p-5">
+      <%= icon(icon_name, css: "text-xl text-primary") %>
+      <p class="mt-2 font-headline text-2xl font-bold tabular-nums text-on-surface"><%= count %></p>
+      <p class="text-xs text-on-surface-variant"><%= label %></p>
+    </div>
+  <% end %>
+</div>
+
+<section>
+  <h2 class="mb-4 font-headline text-lg font-bold text-on-surface">資格</h2>
+
+  <% if @certifications.any? %>
+    <div class="divide-y divide-outline-variant overflow-hidden rounded-lg border border-outline-variant bg-surface-container-lowest">
+      <% @certifications.each do |certification| %>
+        <div class="flex items-center gap-4 p-4">
+          <%= icon("school", css: "text-xl text-on-surface-variant") %>
+          <span class="flex-1">
+            <span class="font-bold text-on-surface"><%= certification.name %></span>
+            <span class="ml-2 font-label text-xs uppercase tracking-wide text-on-surface-variant"><%= certification.slug %></span>
+            <span class="ml-3 text-xs text-on-surface-variant">
+              コース <%= certification.courses.count %>
+            </span>
+          </span>
+          <% if certification.is_published? %>
+            <span class="rounded bg-secondary-container px-2 py-0.5 text-xs font-semibold text-on-secondary-container">公開</span>
+          <% else %>
+            <span class="rounded bg-surface-container-high px-2 py-0.5 text-xs font-semibold text-on-surface-variant">下書き</span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="card px-6 py-12 text-center">
+      <p class="text-sm text-on-surface-variant">
+        まだ資格がありません。<br>
+        <code class="rounded bg-surface-container-high px-1.5 py-0.5 font-label text-xs">content/&lt;slug&gt;.yml</code> を作成して
+        <code class="rounded bg-surface-container-high px-1.5 py-0.5 font-label text-xs">bin/rails content:import</code> を実行してください。
+      </p>
+    </div>
+  <% end %>
+</section>

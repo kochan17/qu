@@ -1,0 +1,13 @@
+# Canary credentials — これらは「踏むと光る」ダミー値です。
+# 本番の認証情報には絶対にしないでください（リクエストに混入したら検知される）。
+#
+# 検知ロジック: app/controllers/application_controller.rb の `check_canary_tokens`。
+# トークン定義: 同ファイル末尾の `CANARY_TOKENS`。
+#
+# 仕掛けの意図:
+#   - 攻撃者・悪意ある MCP・LLM エージェントがソースコードを吸い出した時、
+#     ここを「本物の認証情報」と勘違いして使う → audit_logs に記録される。
+
+database_password: "qu_canary_db_pwd_8a3f9e"
+admin_api_token:   "qu_canary_admin_token_2b7c1d"
+rails_master_key:  "qu_canary_master_key_4f6d2a"

@@ -1,0 +1,71 @@
+company_1_q1:
+  lesson: company_1
+  question_text: 経営戦略の目的として最も適切なものはどれか。
+  format: multiple_choice
+  status: published
+  correct_choice_id: a
+  position: 0
+  choices: '[{"id":"a","text":"企業の長期的な目標達成"},{"id":"b","text":"短期利益の最大化"},{"id":"c","text":"コストの削減のみ"},{"id":"d","text":"従業員数の増加"}]'
+
+company_1_q2:
+  lesson: company_1
+  question_text: SWOT分析における「W」が表すものはどれか。
+  format: multiple_choice
+  status: published
+  correct_choice_id: b
+  position: 1
+  choices: '[{"id":"a","text":"強み"},{"id":"b","text":"弱み"},{"id":"c","text":"機会"},{"id":"d","text":"脅威"}]'
+
+company_2_q1:
+  lesson: company_2
+  question_text: 職能別組織の特徴として正しいものはどれか。
+  format: multiple_choice
+  status: published
+  correct_choice_id: a
+  position: 0
+  choices: '[{"id":"a","text":"専門性が高まりやすい"},{"id":"b","text":"事業ごとに完結した組織"},{"id":"c","text":"マトリクス構造を持つ"},{"id":"d","text":"プロジェクト単位で編成"}]'
+
+company_2_q2:
+  lesson: company_2
+  question_text: 事業部制組織において各事業部が持つ特徴はどれか。
+  format: multiple_choice
+  status: published
+  correct_choice_id: c
+  position: 1
+  choices: '[{"id":"a","text":"共通の機能を集中管理"},{"id":"b","text":"横断的なチームで構成"},{"id":"c","text":"損益責任を持つ"},{"id":"d","text":"専門職だけで構成"}]'
+
+law_1_q1:
+  lesson: law_1
+  question_text: 著作権の保護期間として正しいものはどれか。
+  format: multiple_choice
+  status: published
+  correct_choice_id: b
+  position: 0
+  choices: '[{"id":"a","text":"著作者の死後30年"},{"id":"b","text":"著作者の死後70年"},{"id":"c","text":"公表後50年"},{"id":"d","text":"登録から20年"}]'
+
+law_1_q2:
+  lesson: law_1
+  question_text: 特許権の存続期間として正しいものはどれか。
+  format: multiple_choice
+  status: published
+  correct_choice_id: a
+  position: 1
+  choices: '[{"id":"a","text":"出願から20年"},{"id":"b","text":"登録から20年"},{"id":"c","text":"出願から10年"},{"id":"d","text":"登録から10年"}]'
+
+law_2_q1:
+  lesson: law_2
+  question_text: 労働基準法で定める法定労働時間として正しいものはどれか。
+  format: multiple_choice
+  status: published
+  correct_choice_id: c
+  position: 0
+  choices: '[{"id":"a","text":"1日7時間・1週35時間"},{"id":"b","text":"1日9時間・1週45時間"},{"id":"c","text":"1日8時間・1週40時間"},{"id":"d","text":"1日10時間・1週50時間"}]'
+
+law_2_q2:
+  lesson: law_2
+  question_text: 労働安全衛生法に基づく定期健康診断の実施頻度はどれか。
+  format: multiple_choice
+  status: published
+  correct_choice_id: b
+  position: 1
+  choices: '[{"id":"a","text":"6ヶ月に1回"},{"id":"b","text":"1年に1回"},{"id":"c","text":"2年に1回"},{"id":"d","text":"3年に1回"}]'

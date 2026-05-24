@@ -1,52 +1,47 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" class="scroll-smooth">
   <head>
-    <title><%= content_for(:title).presence || "Que" %></title>
+    <title><%= content_for(:title).presence || "Qu" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#2e2e38" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#faf8ff">
     <meta charset="utf-8">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <%# AI クローラ向け不学習意思表示。 %>
+    <meta name="robots" content="noai, noimageai">
+
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Material Symbols — 唯一許可されたアイコンセット %>
+    <%# Web フォント — Public Sans / Inter / Geist + Material Symbols Outlined %>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Public+Sans:wght@400;500;600;700;800;900&display=swap">
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
 
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body class="min-h-screen antialiased <%= "pb-24 sm:pb-0" if app_chrome? %>">
+  <body class="min-h-screen antialiased font-body text-on-surface">
     <% if app_chrome? %>
-      <%= render "layouts/header" %>
-    <% end %>
-
-    <% if flash[:notice].present? || flash[:alert].present? %>
-      <div class="mx-auto w-full max-w-5xl px-5 pt-4 sm:px-6"
-           data-controller="flash" data-flash-dismiss-after-value="5000">
-        <% if flash[:notice].present? %>
-          <p class="rounded-xl bg-correct-soft px-4 py-3 text-sm text-correct"><%= flash[:notice] %></p>
-        <% end %>
-        <% if flash[:alert].present? %>
-          <p class="rounded-xl bg-incorrect-soft px-4 py-3 text-sm text-incorrect"><%= flash[:alert] %></p>
-        <% end %>
+      <div class="flex min-h-screen flex-col">
+        <%= render "layouts/header" %>
+        <main class="flex-1 pb-24 md:pb-12">
+          <%= render "layouts/flash" %>
+          <%= yield %>
+        </main>
+        <%= render "layouts/footer" %>
       </div>
-    <% end %>
-
-    <main class="mx-auto w-full max-w-5xl px-5 py-8 sm:px-6 sm:py-10">
-      <%= yield %>
-    </main>
-
-    <% if app_chrome? %>
       <%= render "layouts/bottom_nav" %>
+    <% else %>
+      <%= render "layouts/flash", chromeless: true %>
+      <%= yield %>
     <% end %>
   </body>
 </html>

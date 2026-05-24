@@ -1,19 +1,14 @@
-<%# スマホ用ボトムタブ — iPad / デスクトップでは非表示（ヘッダーに集約）。%>
-<nav class="fixed inset-x-0 bottom-0 z-40 border-t border-border-subtle bg-surface-elevated/85 backdrop-blur-xl sm:hidden"
+<%# モバイル専用のボトムタブ。デスクトップではトップナビに集約する。 %>
+<nav class="fixed inset-x-0 bottom-0 z-40 border-t border-outline-variant bg-surface md:hidden"
      style="padding-bottom: env(safe-area-inset-bottom)"
      aria-label="メインナビゲーション">
-  <div class="mx-auto flex max-w-md items-stretch justify-around">
-    <% [
-      [ :today,    "Today", root_path,     "today" ],
-      [ :learn,    "学習",  courses_path,  "menu_book" ],
-      [ :practice, "演習",  practice_path, "quiz" ],
-      [ :settings, "設定",  settings_path, "tune" ]
-    ].each do |key, label, path, icon_name| %>
+  <div class="flex items-stretch justify-around">
+    <% nav_items.each do |key, label, path, icon_name| %>
       <% active = current_nav == key %>
       <%= link_to path,
-            class: "flex flex-1 flex-col items-center gap-0.5 py-2.5 text-[0.7rem] transition-colors #{active ? "text-tint font-medium" : "text-content-faint"}",
+            class: "flex flex-1 flex-col items-center gap-0.5 py-2 text-[0.7rem] font-medium transition-colors #{active ? "text-primary" : "text-on-surface-variant"}",
             "aria-current": (active ? "page" : nil) do %>
-        <%= icon(icon_name, filled: active, css: "text-[1.45rem]") %>
+        <%= icon(icon_name, filled: active, css: "text-2xl") %>
         <span><%= label %></span>
       <% end %>
     <% end %>

@@ -1,0 +1,35 @@
+company_1:
+  section: ip_strategy_company
+  title: 経営戦略の基本
+  slug: keiei-kihon
+  content_type: text
+  is_published: true
+  position: 0
+  body: 経営戦略の基本について学びます。
+
+company_2:
+  section: ip_strategy_company
+  title: 経営組織の種類
+  slug: keiei-soshiki
+  content_type: text
+  is_published: true
+  position: 1
+  body: 経営組織の種類と特徴について学びます。
+
+law_1:
+  section: ip_strategy_law
+  title: 知的財産権の基本
+  slug: chizai-kihon
+  content_type: text
+  is_published: true
+  position: 0
+  body: 知的財産権の種類と保護について学びます。
+
+law_2:
+  section: ip_strategy_law
+  title: 労働関連法規
+  slug: rodo-hoki
+  content_type: text
+  is_published: true
+  position: 1
+  body: 労働基準法や労働安全衛生法について学びます。

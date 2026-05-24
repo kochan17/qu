@@ -1,0 +1,56 @@
+<% content_for :title, "二要素認証の設定" %>
+
+<div class="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-[color:var(--color-primary-fixed)] via-[color:var(--color-surface)] to-[color:var(--color-secondary-fixed)]">
+  <div class="w-full max-w-md space-y-6">
+    <div class="text-center">
+      <span class="font-headline font-bold text-2xl text-on-surface tracking-tight">Qu</span>
+      <h1 class="font-headline text-3xl font-bold text-on-surface mt-1">二要素認証の設定</h1>
+      <p class="font-body text-sm text-on-surface-variant mt-1">認証アプリで QR コードをスキャンしてください</p>
+    </div>
+
+    <div class="card px-8 py-8 space-y-6">
+      <% if flash[:alert] %>
+        <div class="rounded bg-error-container px-4 py-3 text-sm text-on-error-container">
+          <%= flash[:alert] %>
+        </div>
+      <% end %>
+
+      <%# QR コード %>
+      <div class="flex justify-center">
+        <div class="w-48 h-48 [&_svg]:w-full [&_svg]:h-full">
+          <%= @qr_svg.html_safe %>
+        </div>
+      </div>
+
+      <%# 手動入力用 secret %>
+      <div class="space-y-1.5">
+        <p class="font-label text-sm font-semibold text-on-surface">QR が読み取れない場合</p>
+        <p class="font-body text-xs text-on-surface-variant">認証アプリで「手動入力」を選び、以下のコードを入力してください。</p>
+        <code class="block w-full rounded bg-surface-container px-3 py-2 font-mono text-sm text-on-surface tracking-widest break-all select-all"><%= @otp_secret %></code>
+      </div>
+
+      <%# 確認コード入力 %>
+      <%= form_with url: otp_path, method: :post, class: "space-y-4" do |form| %>
+        <div class="space-y-1.5">
+          <%= form.label :code, "認証アプリに表示された 6 桁のコード",
+                class: "block font-label text-sm font-semibold text-on-surface" %>
+          <%= form.text_field :code,
+                required: true,
+                autofocus: true,
+                autocomplete: "one-time-code",
+                inputmode: "numeric",
+                maxlength: 8,
+                placeholder: "000000",
+                class: "block w-full px-3 py-2.5 bg-surface-container-lowest border border-outline-variant rounded text-on-surface font-mono text-sm tracking-widest placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow duration-200" %>
+        </div>
+
+        <%= form.submit "設定を完了する", class: "btn btn-primary btn-block btn-lg" %>
+      <% end %>
+    </div>
+
+    <p class="text-center font-body text-sm text-on-surface-variant">
+      <%= link_to "設定に戻る", settings_path,
+            class: "font-semibold text-brand-blue hover:underline" %>
+    </p>
+  </div>
+</div>
