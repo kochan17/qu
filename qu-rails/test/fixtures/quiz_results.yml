@@ -1,0 +1,11 @@
+general_correct:
+  user: general
+  question: company_1_q1
+  is_correct: true
+  selected_choice_id: a
+
+general_incorrect:
+  user: general
+  question: company_1_q2
+  is_correct: false
+  selected_choice_id: a

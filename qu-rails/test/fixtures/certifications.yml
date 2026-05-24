@@ -1,0 +1,13 @@
+ip:
+  slug: ip
+  name: ITパスポート試験
+  category: it
+  is_published: true
+  position: 0
+
+fe:
+  slug: fe
+  name: 基本情報技術者試験
+  category: it
+  is_published: false
+  position: 1

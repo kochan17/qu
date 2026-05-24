@@ -1,0 +1,11 @@
+ip_strategy:
+  certification: ip
+  title: ストラテジ系
+  is_published: true
+  position: 0
+
+ip_management:
+  certification: ip
+  title: マネジメント系
+  is_published: true
+  position: 1
