@@ -1,0 +1,32 @@
+<% content_for :title, "バックアップコード" %>
+
+<div class="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-[color:var(--color-primary-fixed)] via-[color:var(--color-surface)] to-[color:var(--color-secondary-fixed)]">
+  <div class="w-full max-w-md space-y-6">
+    <div class="text-center">
+      <span class="font-headline font-bold text-2xl text-on-surface tracking-tight">Qu</span>
+      <h1 class="font-headline text-3xl font-bold text-on-surface mt-1">バックアップコード</h1>
+      <p class="font-body text-sm text-on-surface-variant mt-1">二要素認証の設定が完了しました</p>
+    </div>
+
+    <div class="card px-8 py-8 space-y-6">
+      <%# 一度限りの警告 %>
+      <div class="rounded bg-error-container px-4 py-3 text-sm text-on-error-container space-y-1">
+        <p class="font-semibold">このページは一度しか表示されません</p>
+        <p>コードを印刷するか、パスワードマネージャに保存してください。認証アプリが使えない緊急時に必要になります。</p>
+      </div>
+
+      <%# バックアップコード一覧 %>
+      <div class="grid grid-cols-2 gap-2">
+        <% @backup_codes.each do |code| %>
+          <code class="block rounded bg-surface-container px-3 py-2 font-mono text-sm text-center text-on-surface tracking-widest select-all"><%= code %></code>
+        <% end %>
+      </div>
+
+      <p class="font-body text-xs text-on-surface-variant">
+        各コードは 1 回だけ使用できます。使い切った場合は設定から再生成してください。
+      </p>
+
+      <%= link_to "了解しました", root_path, class: "btn btn-primary btn-block btn-lg" %>
+    </div>
+  </div>
+</div>

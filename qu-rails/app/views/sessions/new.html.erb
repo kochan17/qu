@@ -1,31 +1,61 @@
 <% content_for :title, "ログイン" %>
 
-<div class="mx-auto max-w-sm py-6">
-  <div class="text-center">
-    <p class="text-2xl font-semibold tracking-tight text-content">Que</p>
-    <p class="mt-2 text-sm text-content-faint">資格学習を、毎日の習慣に。</p>
-  </div>
-
-  <%= form_with url: session_path, class: "mt-10 space-y-5" do |form| %>
-    <div class="space-y-1.5">
-      <%= form.label :email_address, "メールアドレス", class: "text-sm font-medium text-content" %>
-      <%= form.email_field :email_address, required: true, autofocus: true,
-            autocomplete: "username", value: params[:email_address],
-            class: "block w-full rounded-xl border border-border-subtle bg-surface-elevated px-3.5 py-2.5 text-sm text-content focus:border-tint focus:outline-none" %>
+<div class="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-[color:var(--color-primary-fixed)] via-[color:var(--color-surface)] to-[color:var(--color-secondary-fixed)]">
+  <div class="w-full max-w-md space-y-6">
+    <div class="text-center">
+      <span class="font-headline font-bold text-2xl text-on-surface tracking-tight">Qu</span>
+      <h1 class="font-headline text-3xl font-bold text-on-surface mt-1">おかえりなさい</h1>
+      <p class="font-body text-sm text-on-surface-variant mt-1">学習の続きを始めましょう</p>
     </div>
 
-    <div class="space-y-1.5">
-      <%= form.label :password, "パスワード", class: "text-sm font-medium text-content" %>
-      <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72,
-            class: "block w-full rounded-xl border border-border-subtle bg-surface-elevated px-3.5 py-2.5 text-sm text-content focus:border-tint focus:outline-none" %>
+    <div class="card px-8 py-8 space-y-5">
+      <%= form_with model: @login_form, url: session_path, class: "space-y-5" do |form| %>
+        <% if @login_form.errors.any? %>
+          <div class="rounded bg-error-container px-4 py-3 text-sm text-on-error-container">
+            <ul class="list-disc space-y-0.5 pl-4">
+              <% @login_form.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="space-y-1.5">
+          <%= form.label :email_address, "メールアドレス",
+                class: "block font-label text-sm font-semibold text-on-surface" %>
+          <%= form.email_field :email_address, required: true, autofocus: true,
+                autocomplete: "username", value: params[:email_address],
+                class: "block w-full px-3 py-2.5 bg-surface-container-lowest border border-outline-variant rounded text-on-surface font-body text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow duration-200" %>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between">
+            <%= form.label :password, "パスワード",
+                  class: "block font-label text-sm font-semibold text-on-surface" %>
+            <%= link_to "パスワードを忘れた場合", new_password_path,
+                  class: "font-body text-sm text-brand-blue hover:underline" %>
+          </div>
+          <div class="relative" data-controller="password-toggle">
+            <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72,
+                  data: { password_toggle_target: "input" },
+                  class: "block w-full pl-3 pr-11 py-2.5 bg-surface-container-lowest border border-outline-variant rounded text-on-surface font-body text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow duration-200" %>
+            <button type="button"
+                    data-action="password-toggle#toggle"
+                    class="absolute inset-y-0 right-0 flex items-center px-3 text-on-surface-variant transition-colors hover:text-on-surface"
+                    aria-label="パスワードの表示を切り替える">
+              <%= icon("visibility_off", css: "text-xl", data: { password_toggle_target: "icon" }) %>
+            </button>
+          </div>
+        </div>
+
+        <%= form.submit "ログイン", class: "btn btn-primary btn-block btn-lg mt-2" %>
+      <% end %>
     </div>
 
-    <%= form.submit "ログイン",
-          class: "w-full cursor-pointer rounded-xl bg-tint px-4 py-2.5 text-sm font-medium text-on-tint transition-opacity hover:opacity-90" %>
-  <% end %>
-
-  <div class="mt-6 flex items-center justify-between text-sm">
-    <%= link_to "パスワードを忘れた方", new_password_path, class: "text-content-faint hover:text-content" %>
-    <%= link_to "アカウント作成", new_registration_path, class: "font-medium text-tint hover:opacity-80" %>
+    <p class="text-center font-body text-sm text-on-surface-variant">
+      アカウントをお持ちではありませんか？
+      <%= link_to "新規登録", new_registration_path,
+            class: "font-semibold text-brand-blue hover:underline" %>
+    </p>
   </div>
 </div>

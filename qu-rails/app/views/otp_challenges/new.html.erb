@@ -1,0 +1,44 @@
+<% content_for :title, "二要素認証" %>
+
+<div class="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-[color:var(--color-primary-fixed)] via-[color:var(--color-surface)] to-[color:var(--color-secondary-fixed)]">
+  <div class="w-full max-w-md space-y-6">
+    <div class="text-center">
+      <span class="font-headline font-bold text-2xl text-on-surface tracking-tight">Qu</span>
+      <h1 class="font-headline text-3xl font-bold text-on-surface mt-1">二要素認証</h1>
+      <p class="font-body text-sm text-on-surface-variant mt-1">認証アプリに表示されたコードを入力してください</p>
+    </div>
+
+    <div class="card px-8 py-8 space-y-5">
+      <% if flash[:alert] %>
+        <div class="rounded bg-error-container px-4 py-3 text-sm text-on-error-container">
+          <%= flash[:alert] %>
+        </div>
+      <% end %>
+
+      <%= form_with url: otp_challenge_path, method: :post, class: "space-y-5" do |form| %>
+        <div class="space-y-1.5">
+          <%= form.label :code, "認証コード",
+                class: "block font-label text-sm font-semibold text-on-surface" %>
+          <%= form.text_field :code,
+                required: true,
+                autofocus: true,
+                autocomplete: "one-time-code",
+                inputmode: "numeric",
+                maxlength: 8,
+                placeholder: "000000",
+                class: "block w-full px-3 py-2.5 bg-surface-container-lowest border border-outline-variant rounded text-on-surface font-mono text-sm tracking-widest text-center placeholder:text-outline focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow duration-200" %>
+          <p class="font-body text-xs text-on-surface-variant">
+            バックアップコードも入力できます。
+          </p>
+        </div>
+
+        <%= form.submit "確認する", class: "btn btn-primary btn-block btn-lg" %>
+      <% end %>
+    </div>
+
+    <p class="text-center font-body text-sm text-on-surface-variant">
+      <%= button_to "ログインに戻る", session_path, method: :delete,
+            class: "font-semibold text-brand-blue hover:underline bg-transparent border-none cursor-pointer p-0 font-body text-sm" %>
+    </p>
+  </div>
+</div>

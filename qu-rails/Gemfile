@@ -63,3 +63,15 @@ group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
 end
+
+gem "ruby_ui", "~> 1.2", group: :development, require: false
+
+gem "phlex-rails", "~> 2.4"
+
+gem "tailwind_merge", "~> 1.5"
+
+gem "active_storage_validations", "~> 3.0"
+
+# 2FA (TOTP)
+gem "rotp", "~> 6.3"
+gem "rqrcode", "~> 3.1"
